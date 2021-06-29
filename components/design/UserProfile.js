@@ -1,15 +1,17 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Link from 'next/dist/client/link'
 import Badge from './Badge'
 import Posts from '../posts/Posts'
+import Context from '../../context/general/Context'
 const UserProfile = ({ user }) => {
+  const { me } = useContext(Context)
   const [view, setView] = useState("posts")
   return (
     <div className='p-2 flex flex-col gap-2 '>
           <div className='flex flex-col md:flex-row gap-2'>
-            <figure className={`flex justify-between items-center flex-col max-content p-2`}>
-              <img className='max-w-sm' src={user.profile_img || '/imgs/user.png'} alt="profile picture" />
-              <figcaption>
+            <figure className={`flex justify-between items-center flex-col max-content p-2  max-w-md mx-auto p-5`}>
+              <img className='profile' src={user.profile_img || 'https://cdn.pixabay.com/photo/2016/03/05/13/05/family-1237701__340.jpg'} alt="profile picture" />
+              <figcaption className='mt-1'>
                 <Link href={`/profile/${user.id}`}>
                     <a>{user.name}</a>
                 </Link>
