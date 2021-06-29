@@ -1,6 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/dist/client/link'
+import Badge from './Badge'
+import Posts from '../posts/Posts'
 const UserProfile = ({ user }) => {
+  const [view, setView] = useState("posts")
   return (
     <div className='p-2 flex flex-col gap-2 '>
           <div className='flex flex-col md:flex-row gap-2'>
@@ -14,20 +17,12 @@ const UserProfile = ({ user }) => {
             </figure>
             <div className='flex-grow flex flex-col'>
               <div className="flex w-100 items-center justify-between p-2">
-                <div className='flex flex-col items-center justify-between p-2'>
-                  <i className="fas fa-user-friends" />
-                  <strong>{user.followers.length} Followers</strong>
-                </div>
-                <div className='flex flex-col items-center justify-between p-2'>
-                  <i className="fas fa-user-friends" />
-                  <strong>{user.following.length} Following</strong>
-                </div>
-                <div className='flex flex-col items-center justify-between p-2'>
-                  <i className="fas fa-user-friends" />
-                  <strong>{user.followers.length} Followers</strong>
-                </div>
+                <Badge icon="fas fa-user-friends" text={`${user.posts.length} posts`} onClick={() => setView("posts") } />
+                <Badge icon='fas fa-user-friends' text={`${user.following.length} Following`} onClick={() => setView('following')} />
+                <Badge icon='fas fa-user-friends' text={`${user.followers.length} Followers`} onClick={() => setView('followers')} />
               </div>
             </div>
+            {view == 'posts' && <Posts posts={user.posts} />}
           </div>
         </div>
   )

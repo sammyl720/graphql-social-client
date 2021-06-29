@@ -22,6 +22,11 @@ const ME = gql`
       posts {
         text
         images
+        user {
+          id
+          name
+          profile_img
+        }
         created_on {
           ... date
         }
