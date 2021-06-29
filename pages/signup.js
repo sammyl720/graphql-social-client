@@ -30,7 +30,7 @@ const Signup = () => {
       />
       <Input
         title="Enter your password"
-        label={<i class="fas fa-lock" />}
+        label={<i className="fas fa-lock" />}
         name='password'
         type='password'
         value={values.password}
@@ -40,7 +40,7 @@ const Signup = () => {
       />
       <Input
         title="Confirm your password"
-        label={<i class="fas fa-lock" />}
+        label={<i className="fas fa-lock" />}
         name='confirmpassword'
         type='password'
         value={values.confirmpassword}

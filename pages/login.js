@@ -32,7 +32,7 @@ const Login = () => {
           <h1 className='text-indigo-900 text-4xl mx-auto'>Login</h1>
         <Input
           title="Enter your E-Mail"
-          label={<i class="far fa-envelope" />}
+          label={<i className="far fa-envelope" />}
           name='email'
           type='email'
           value={values.email}
@@ -42,7 +42,7 @@ const Login = () => {
         />
         <Input
           title="Enter your password"
-          label={<i class="fas fa-lock" />}
+          label={<i className="fas fa-lock" />}
           name='password'
           type='password'
           value={values.password}

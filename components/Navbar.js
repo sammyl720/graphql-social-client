@@ -1,15 +1,26 @@
 import CustomLink from "./design/CustomLink"
 import { useRouter } from "next/router"
+import { useContext } from "react"
+import Context from "../context/general/Context"
+
 const Navbar = () => {
+  const { token, logout } = useContext(Context)
   const router = useRouter()
-  console.log(router.route)
   return (
-    <header className='w-screen flex items-center bg-indigo-900 p-4 justify-between'>
-      <CustomLink href='/Landing' title={<img className='w-12' src="imgs/connections.png" alt="Logo" />} />
-      <nav className=''>
-        <CustomLink href='/' title='Home' current={router.route} />
-        <CustomLink href='/login' title='Login' current={router.route} />
-        <CustomLink href='/signup' title='Sign Up' current={router.route} />
+    <header className='w-screen flex items-center z-50 bg-indigo-900 p-4 justify-between'>
+      <CustomLink href='/Landing' title={<img className='w-12' src="/imgs/connections.png" alt="Logo" />} />
+      <nav>
+        {token ? (
+          <>
+            <CustomLink href='/profile' title='Profile' current={router.route} />
+            <span className='cursor-pointer text-blue-300' onClick={logout}>Logout</span>
+          </>
+        ) : (
+          <>
+            <CustomLink href='/login' title='Login' current={router.route} />
+            <CustomLink href='/signup' title='Sign Up' current={router.route} />
+          </>
+        )}
       </nav>
     </header>
   )

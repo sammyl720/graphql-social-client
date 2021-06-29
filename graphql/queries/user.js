@@ -1,8 +1,9 @@
 import {gql} from '@apollo/client';
 
-const ME = gql`
-{
-  me {
+const USER = gql`
+query User($id: ID!){
+  
+  user(id:$id) {
     ... on User {
       id
       verified
@@ -71,4 +72,4 @@ fragment date on Date {
   full_date
 }
 `
-export default ME
+export default USER

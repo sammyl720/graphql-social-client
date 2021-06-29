@@ -1,12 +1,12 @@
 import React, { useEffect, useReducer } from 'react';
 import Context from './Context'
 import reducer from './reducer';
-import { SET_ERROR, SET_LOADING, SET_MESSAGE, SET_TOKEN } from './types';
-import { useQuery, useMutation } from '@apollo/client'
-// import {SIGN_UP, LOGIN } from '../../graphql/mutations/index';
+import { LOGOUT, SET_ERROR, SET_LOADING, SET_MESSAGE, SET_OWNER, SET_TOKEN, SET_USER } from './types';
+import {  useMutation } from '@apollo/client'
+
 import LOGIN from '../../graphql/mutations/login'
-import ME from '../../graphql/queries/me';
-const Provider = ({ children }) => {
+
+function Provider ({ children }) {
   let token = null;
   useEffect(() => {
     if(window != undefined && window.localStorage.token){
@@ -18,8 +18,8 @@ const Provider = ({ children }) => {
     loading: false,
     error: null,
     message: null,
-    user: null,
-    test: "This is a test"
+    me: null,
+    user: null
   }
 
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -38,21 +38,13 @@ const Provider = ({ children }) => {
     dispatch({ type: SET_LOADING, payload: loading })
   }
 
-  const me = (cb = (success) => (console.log(success))) => {
+  const setOwner = (owner) => {
+    if(!owner.name){
+      setError("user not found")
+      return null;
+    }
     if(!state.token) return null;
-    setLoading(true)
-    useQuery(ME, {
-      onCompleted: (data) => {
-        console.log(data)
-        setLoading(false)
-        return cb(true)
-      },
-      onError: (e) => {
-        console.log(e)
-        setLoading(false)
-        return cb(true)
-      }
-    })
+    dispatch({ type: SET_OWNER, payload: owner })
   }
   // signup
   // const signup = async (variables) => {
@@ -98,6 +90,10 @@ const Provider = ({ children }) => {
       
   })
 
+  const logout = () => {
+    dispatch({ type: LOGOUT })
+  }
+
   // set message
   const setMessage = (message, timer = 5000) => {
     dispatch({ type: SET_MESSAGE, payload: message })
@@ -113,6 +109,10 @@ const Provider = ({ children }) => {
       dispatch({ type: SET_ERROR, payload: null })
     }, timer)
   }
+
+  const setUser = (user) => {
+    dispatch({ type: SET_USER, payload: user })
+  }
   return (
     <Context.Provider value={{
       ...state,
@@ -120,9 +120,12 @@ const Provider = ({ children }) => {
       setLoading,
       setMessage,
       setError,
-      me,
+      logout,
+
       // signup,
-      login
+      login,
+      setUser,
+      setOwner
     }}>
       {children}
     </Context.Provider>
