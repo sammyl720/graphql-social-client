@@ -122,7 +122,6 @@ function Provider ({ children }) {
       setMessage,
       setError,
       logout,
-
       signup,
       login,
       setUser,

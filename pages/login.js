@@ -31,7 +31,7 @@ const Login = () => {
   return (
     <form onSubmit={handleSubmit} className='bg-white max-w-sm flex flex-col p-4 mx-auto my-auto border rounded-lg shadow'>
       <Head>
-        <title>Kesher | Signup</title>
+        <title>Kesher | Login</title>
         <meta name="description" content="Login to connect to your peers." />
       </Head>
       {error && (
