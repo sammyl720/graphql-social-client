@@ -6,7 +6,6 @@ function Layout ({ children }) {
   const { setToken, token } = useContext(Context)
   let client = typeof window != 'undefined'
   useEffect(() => {
-    console.log(client)
     if(window && !token){
       if(window.localStorage.token){
         setToken(window.localStorage.token)

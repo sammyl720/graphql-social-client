@@ -1,14 +1,17 @@
 import React, {useContext, useEffect, useState} from 'react'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
+import Link from 'next/dist/client/link'
 import Input from '../components/design/Input'
 import Loader from '../components/design/Loader'
+import Toast from '../components/design/Toast'
 import Context from '../context/general/Context'
 const Login = () => {
-  const { login, loading, setLoading, token } = useContext(Context)
+  const { login, loading, setLoading, token, error, setError } = useContext(Context)
   const router = useRouter()
   useEffect(() => {
     if(token){
-      router.push('/')
+      router.push('/profile')
     }
   }, [token])
   const [values, setValues] = useState({
@@ -27,6 +30,13 @@ const Login = () => {
   }
   return (
     <form onSubmit={handleSubmit} className='bg-white max-w-sm flex flex-col p-4 mx-auto my-auto border rounded-lg shadow'>
+      <Head>
+        <title>Kesher | Signup</title>
+        <meta name="description" content="Login to connect to your peers." />
+      </Head>
+      {error && (
+        <Toast message={error} type='error' onLeave={() => setError(null) } />
+      )}
       {loading ? <Loader /> : (
         <>
           <h1 className='text-indigo-900 text-4xl mx-auto'>Login</h1>
@@ -52,6 +62,11 @@ const Login = () => {
         />
 
         <input className='btn' type="submit" value="Login" />
+        <small className='text-center mt-2'>
+        Don't have an account yet? <Link href='/signup'>
+          <a className='text-blue-600 font-semibold'>Signup</a>
+        </Link>
+      </small>
         </>
       )}
     </form>

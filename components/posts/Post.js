@@ -10,9 +10,9 @@ export default function Post({ post }) {
   return (
     <article className='flex  p-2 my-2 bg-gray-50 rounded shadow'>
       <figure className="flex flex-col min-w-max mr-2 items-center border">
-        <img className='profile-small' src={`${post.user.profile_img || 'https://cdn.pixabay.com/photo/2016/10/07/08/56/woman-1721069__340.jpg'}`} alt="user" />
+        <img className='profile-small' src={`${post.user.profile_img || '/imgs/user.png'}`} alt="user" />
       </figure>
-      <section className='flexflex-col justify-between w-full h-full p-2'>
+      <section className='flex flex-col justify-between w-full h-full p-2'>
         <small className='pl-1 mb-2'>{post.user.name} <time className="text-xs text-gray-500 ml-2" dateTime={date.toISOString()}>{post.created_on.date}</time></small>
         <p className="leading-12 px-1 py-1 border-b">
           {(post.text.length > 50 ) && !drawer ? (post.text.substr(0,50) + '...') : (post.text)}  

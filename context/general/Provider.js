@@ -5,6 +5,7 @@ import { LOGOUT, SET_ERROR, SET_LOADING, SET_MESSAGE, SET_OWNER, SET_TOKEN, SET_
 import {  useMutation } from '@apollo/client'
 
 import LOGIN from '../../graphql/mutations/login'
+import SIGN_UP from '../../graphql/mutations/signup'
 
 function Provider ({ children }) {
   let token = null;
@@ -46,27 +47,6 @@ function Provider ({ children }) {
     if(!state.token) return null;
     dispatch({ type: SET_OWNER, payload: owner })
   }
-  // signup
-  // const signup = async (variables) => {
-  //   try {
-  //     setLoading(true)
-  //     useMutation( SIGN_UP,
-  //       {
-  //         variables,
-  //         onCompleted: (data) => {
-  //           console.log(data)
-  //         },
-  //         onError: (error) => {
-  //           console.log(erro)
-  //         }
-  //     })[0]()
-
-  //   } catch (error) {
-  //     console.log(error)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
 
   // login
   const [login] = useMutation(LOGIN,
@@ -79,6 +59,27 @@ function Provider ({ children }) {
         } else if(data.login.token){
           setMessage("Succesfuly signed in")
           setToken(data.login.token)
+        }
+        setLoading(false)
+      },
+      onError: (error) => {
+        setError(error.message)
+        console.log(error)
+        setLoading(false)
+      },
+      
+  })
+  // login
+  const [signup] = useMutation(SIGN_UP,
+    {
+      onCompleted: (data) => {
+        console.log(data)
+        if(data.signup.errors){
+          console.log("errors")
+          setError(data.signup.message)
+        } else if(data.signup.token){
+          setMessage("Succesfuly signed up")
+          setToken(data.signup.token)
         }
         setLoading(false)
       },
@@ -122,7 +123,7 @@ function Provider ({ children }) {
       setError,
       logout,
 
-      // signup,
+      signup,
       login,
       setUser,
       setOwner

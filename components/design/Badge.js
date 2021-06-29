@@ -2,7 +2,7 @@ import React from 'react'
 
 const Badge = ({ icon, text, onClick, size, row }) => {
   return (
-  <div className={`flex cursor-pointer ${row ? 'gap-4 justify-center' : 'flex-col justify-between'} items-center  p-2 ${size == 'small' && 'text-sm'} `} onClick={onClick}>
+  <div className={`flex my-2 md:my-0  cursor-pointer ${row ? 'gap-4 justify-center' : 'flex-col justify-between'} items-center  p-2 ${size == 'small' && 'text-sm'} `} onClick={onClick}>
     <i className={icon + ' mb-2'} />
     <strong>{text}</strong>
   </div>

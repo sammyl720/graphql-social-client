@@ -29,9 +29,10 @@ body{
   box-shadow: 1px 1px 20px rgba(0, 0, 0, 0.2);
 }
 .backdrop {
-  @apply flex flex-col w-screen h-screen bg-blue-100;
+  @apply flex flex-col w-screen h-screen bg-blue-100 min-h-screen;
   background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
   background-size: 100%;
+  height: 100%;
 }
 
 .loader{
