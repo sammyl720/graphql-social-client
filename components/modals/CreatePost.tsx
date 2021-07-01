@@ -1,5 +1,6 @@
-import React, { useRef, useEffect, useState, FormEventHandler, InputHTMLAttributes } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { User } from '../../interfaces'
+import UPLOAD from 'imgs/upload.png'
 import Input from '../design/Input';
 interface CreatePostProps {
   user: User;
@@ -10,20 +11,35 @@ interface Values {
   text: string;
   imgs: any[];
   public: boolean;
+  resized?: string;
 }
 export default function CreatePost(props: CreatePostProps) {
   const divRef = useRef<HTMLDivElement>(null)
-  const [values, setValues] = useState<Values>({
-    text: '',
-    imgs: [],
-    public: true
-  })
-  useEffect(() => {
-    if(divRef.current){
-      console.log('color')
-    }
-  }, [divRef])
+  const imgRef = useRef<HTMLImageElement>(null)
+  
+  const [text, setText] = useState<string>('')
+  const [isPublic, setIsPublic] = useState<boolean>(true)
+  const [imgs, setImgs] = useState<{ base64: string;filename:string}[]>([])
+  const [inputFile, setInputFile] = useState<File>(null)
+  const [resized, setResized] = useState<{ base64:string; filename:string}>({ filename: '', base64: ''});
 
+  useEffect(() => {
+    if(imgRef.current){
+      const maxWidth = 400;
+      imgRef.current.onload = function(e:Event){
+        let canvas = document.createElement('canvas');
+        const scaleSize = maxWidth / imgRef.current.width;
+
+        canvas.width = maxWidth
+        canvas.height = imgRef.current.height * scaleSize;
+        let ctx = canvas.getContext('2d');
+        ctx.drawImage(imgRef.current, 0, 0, canvas.width, canvas.height);
+        let data = canvas.toDataURL('image/jpeg');
+        console.log(data)
+        setResized({ base64: data.toString(), filename: imgs[0].filename || '' })
+      }
+    }
+  }, [imgs, imgRef])
   const dismiss = () => {
     if(divRef.current){
       props.onDismiss((oldToggle) => !oldToggle)
@@ -33,32 +49,34 @@ export default function CreatePost(props: CreatePostProps) {
   const handleFileChange = (e:React.ChangeEvent<HTMLInputElement>) => {
 
     const file = e.currentTarget.files[0];
+    setInputFile(file)
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onload = function(event){
-      console.log(event)
-      setValues({ ...values, [e.target.name]: [event.target.result] })
+      setImgs([{
+        base64: event.target.result.toString(),
+        filename: file.name
+      }])
     }
-    console.log(e.currentTarget.files[0].name)
   }
 
   const onSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      console.log(values)
+      console.log(resized, text, isPublic)
     } catch (error) {
       console.log(error)
     }
   }
   return (
-    <div ref={divRef} className='modal absolute z-50 rounded-lg bg-white shadow-md inset-2 flex flex-col items-center p-4'>
+    <div ref={divRef} className='modal absolute z-50 rounded-lg bg-white shadow-md inset-1 p-3  flex flex-col items-center h-auto'>
       <span onClick={dismiss} className='ml-auto cursor-pointer'>
         <i className="fas fa-times" />
       </span>
-      <form onSubmit={onSubmit}>
+      <form className='flex flex-col' onSubmit={onSubmit}>
         <h1 className='text-bold text-center'>Create Post</h1>
         <Input 
-          value={values.text}
+          value={text}
           label={<i className='fas fa-paragraph' />}
           type='text'
           name='text'
@@ -66,19 +84,26 @@ export default function CreatePost(props: CreatePostProps) {
           placeholder='What is on your mind?'
           title='What is on your mind?'
           handleChange={(e) => {
-          setValues({ ...values, [e.target.name]: e.target.value })
+          setText(e.target.value )
         }} />
         <Input 
-          value={values.text}
-          label={<i className='fas fa-paragraph' />}
+          value={''}
+          label={<i className='fas fa-images' />}
           type='file'
           name='imgs'
+          attributes={{
+            accept: 'image/*'
+          }}
+          filename={resized.filename || ''}
           required={false}
           placeholder='What is on your mind?'
           title='Add Images'
           handleChange={(e) => {
           handleFileChange(e)
         }} />
+        {resized.base64 && (
+          <img className='max-w-60 my-3 mx-auto h-auto' src={resized.base64} alt="test" />
+        )}
         
         <small className='mx-auto'>
           <label htmlFor="public">
@@ -89,17 +114,21 @@ export default function CreatePost(props: CreatePostProps) {
             type="checkbox" 
             name="public" 
             id="id" 
-            checked={values.public}
+            checked={isPublic}
             onChange={(e) => {
-              setValues({ ...values, [e.target.name]: e.target.checked})
+              setIsPublic(e.target.checked)
             }}
           />
         </small>
+        <button type="submit" className='bg-indigo-800 p-2 text-white mb-2 cursor-pointer  rounded'>
+          Post
+        </button>
       </form>
-      {values.imgs.length > 0 && (
+      {imgs.length > 0 && (
 
-        <img className='m-w-100 h-auto' src={values.imgs[0]} alt="test" />
+        <img ref={imgRef} className='w-0 hidden h-auto' src={imgs[0].base64} alt="test" />
       )}
+      
     </div>
   )
 }

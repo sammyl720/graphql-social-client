@@ -23,7 +23,7 @@ const UserProfile = ({ user }) => {
             <CreatePost user={user} onDismiss={setToggleCreateModal} />
           )}
           <div className='flex flex-col gap-2'>
-            <figure className={`flex justify-between items-center flex-col max-content p-2  max-w-md mx-auto p-5`}>
+            <figure className={`flex justify-between items-center flex-col max-content  max-w-md mx-auto p-5`}>
               <img className='profile' src={user.profile_img || '/imgs/user.png'} alt="profile picture" />
               <figcaption className='mt-1'>
                 <Link href={`/profile/${user.id}`}>

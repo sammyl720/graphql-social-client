@@ -37,7 +37,7 @@ function User() {
   })
   if (loading) return <Loader />;
   return (
-    <div className="text-2xl w-100 h-100 bg-red-400">
+    <div className="text-2xl w-100 h-100 ">
       {error && (
         <Toast message={error} type='error' onLeave={() => setError(null) } />
       )}
