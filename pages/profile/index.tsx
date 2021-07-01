@@ -1,17 +1,19 @@
 import { useState } from 'react'
 import Head from 'next/head'
+import cookie from 'cookie'
 import { useRouter } from 'next/router'
 import { useQuery } from '@apollo/client'
-import UserProfile from '../components/design/UserProfile'
-import Loader from '../components/design/Loader'
-import Toast from '../components/design/Toast'
+import Loader from '../../components/design/Loader'
+import Toast from '../../components/design/Toast'
+import UserProfile from '../../components/design/UserProfile'
 import { useContext, useEffect } from 'react'
-import Context from '../context/general/Context'
-import ME from '../graphql/queries/me'
+import Context from '../../context/general/Context'
+import ME from '../../graphql/queries/me'
 
-function Home() {
+function User() {
   const router = useRouter()
   const { token, me, loading, setLoading, setOwner, setError, error, message, setMessage } = useContext(Context)
+  const [text, setText] = useState("This is a message")
   useEffect(() => {
     if(!token){
       router.push('/login')
@@ -23,6 +25,7 @@ function Home() {
         setOwner(data.me)
         setMessage(`Welcome back ${data.me.name}`)
       } else {
+        console.log(data.me)
         setError(data.me.message)
       }
       setLoading(false)
@@ -34,17 +37,17 @@ function Home() {
   })
   if (loading) return <Loader />;
   return (
-    <div className="text-2xl text-blue-900 w-100 h-100">
-      {message && (
-        <Toast message={message} type='success' onLeave={() => setMessage(null) } />
-      )}
+    <div className="text-2xl w-100 h-100">
 
       {error && (
         <Toast message={error} type='error' onLeave={() => setError(null) } />
       )}
-      <h1>Feed</h1>
+      {me && (
+        <UserProfile user={me} />
+      )}
     </div>
   )
 }
 
-export default Home
+
+export default User

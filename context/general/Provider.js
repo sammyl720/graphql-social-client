@@ -6,6 +6,7 @@ import {  useMutation } from '@apollo/client'
 
 import LOGIN from '../../graphql/mutations/login'
 import SIGN_UP from '../../graphql/mutations/signup'
+import axios from 'axios';
 
 function Provider ({ children }) {
   let token = null;
@@ -27,7 +28,7 @@ function Provider ({ children }) {
 
   // dispatch functions
   // set token
-  const setToken = token => {
+  const setToken = async (token) => {
     if(!window.localStorage.token){
       window.localStorage.setItem('token', token);
     } 

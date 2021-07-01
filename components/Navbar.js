@@ -18,7 +18,6 @@ const Navbar = () => {
         ) : (
           <>
             <CustomLink href='/login' title='Login' current={router.route} />
-            <CustomLink href='/signup' title='Sign Up' current={router.route} />
           </>
         )}
       </nav>

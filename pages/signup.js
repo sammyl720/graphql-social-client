@@ -52,7 +52,7 @@ const Signup = () => {
       <h1 className='text-indigo-900 text-4xl mx-auto'>Signup</h1>
       <Input
         title="Enter your E-Mail"
-        label={<i class="far fa-envelope" />}
+        label={<i className="far fa-envelope" />}
         name='email'
         type='email'
         value={values.email}

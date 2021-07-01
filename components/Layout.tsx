@@ -1,3 +1,4 @@
+import { GetServerSideProps } from "next"
 import { useContext, useEffect } from "react"
 import Context from "../context/general/Context"
 import Navbar from "./Navbar"
@@ -9,7 +10,6 @@ function Layout ({ children }) {
     if(window && !token){
       if(window.localStorage.token){
         setToken(window.localStorage.token)
-        console.log('setting token to state')
       }
     }
 
@@ -23,4 +23,6 @@ function Layout ({ children }) {
     </div>
   )
 }
+
+
 export default Layout
