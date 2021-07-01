@@ -4,7 +4,9 @@ import Badge from './Badge'
 import Posts from '../posts/Posts'
 import Head from 'next/head'
 import Context from '../../context/general/Context'
+import CreatePost from '../modals/CreatePost'
 const UserProfile = ({ user }) => {
+  const [toggleCreateModel, setToggleCreateModal] = useState(false)
   const { me } = useContext(Context)
   const [view, setView] = useState("posts")
   return (
@@ -13,6 +15,13 @@ const UserProfile = ({ user }) => {
         <title>Kesher | Profile </title>
         <meta name="description" content={`${user.name} is on kesher.`} />
       </Head>
+          <i className="fas fa-pen ml-auto cursor-pointer" onClick={() => {
+            setToggleCreateModal(oldToggle => !oldToggle)
+          }} />
+          { toggleCreateModel && (
+
+            <CreatePost user={user} onDismiss={setToggleCreateModal} />
+          )}
           <div className='flex flex-col gap-2'>
             <figure className={`flex justify-between items-center flex-col max-content p-2  max-w-md mx-auto p-5`}>
               <img className='profile' src={user.profile_img || '/imgs/user.png'} alt="profile picture" />
