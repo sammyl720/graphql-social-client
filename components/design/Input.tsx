@@ -1,6 +1,19 @@
 import React from 'react'
 
-const Input = ({ 
+
+interface InputProps {
+  label: string | HTMLElement;
+  name:string;
+  type:string;
+  placeholder?:string;
+  required?:boolean;
+  value:string;
+  tabIndex?: number;
+  title?:string;
+  handleChange: (e: React.FormEvent<HTMLInputElement>) => any;
+}
+const Input = ({
+  tabIndex = 0,
   label,  
   name,
   type, 
@@ -11,12 +24,13 @@ const Input = ({
   handleChange
 }) => {
   return (
-    <div className="flex-row flex my-4 items-center w-100justify-between border">
+    <div className={`flex-row flex my-4 items-center w-100 justify-between border`}>
         <label title={title} htmlFor={name} className='bg-indigo-800 text-white p-2 px-4 rounded-l-md text-xl'>
           {label}
         </label>
         <input 
-        className="focus:outline-none flex-grow ml-4 p-2 rounded-r-md"
+        tabIndex={tabIndex}
+        className={`focus:outline-none flex-grow ml-4 p-2 rounded-r-md `}
         type={type} 
         name={name} 
         id={name} 
