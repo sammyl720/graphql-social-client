@@ -1,5 +1,5 @@
 module.exports = {
   env: {
-    API_URL: 'https://graphql-social.herokuapp.com/',
+    API_URL: 'http://127.0.0.1:4000/graphql',
   },
 }

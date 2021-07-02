@@ -2,7 +2,7 @@ export interface User {
   id?: string;
   name?: string;
   verified?: boolean;
-  profile_img?: string;
+  profile_img?: Image;
   private?: boolean;
   followers?: User[];
   following?: User[];
@@ -22,6 +22,8 @@ export interface Post {
   user?:User;
   score?: number;
   public?:boolean;
+  comments?: Comment[]
+  images?: Image[];
   likes?: User[];
   hash_tags?:string[]; 
 }
@@ -29,7 +31,7 @@ export interface Post {
 export interface Comment {
   id?: string;
   text?: string[];
-  images?: string[];
+  images?: Image[];
   user?: User;
   created_on?: Date;
   post?: Post;
@@ -45,4 +47,15 @@ export interface Date {
   utc?:string;
   date?:string;
   time?:string;
+}
+
+export interface Image {
+   id?: string;
+   asset_id?: string;
+   public_id?:string;
+   url?: string;
+   secure_url?:string;
+   format?: string;
+   resource_type?:string;
+   created_at?:string;
 }

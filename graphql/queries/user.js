@@ -9,24 +9,34 @@ query User($id: ID!){
       verified
       name
       email
-      profile_img
+      profile_img {
+          ... image
+        }
       followers {
         id
         name
-        profile_img
+        profile_img {
+          ... image
+        }
       }
       following {
         id
         name
-        profile_img
+        profile_img {
+          ... image
+        }
       }
       posts {
         text
-        images
+        images {
+          ... image
+        }
         user {
           id
           name
-          profile_img
+          profile_img {
+            ... image
+          }
         }
         created_on {
           ... date
@@ -35,7 +45,9 @@ query User($id: ID!){
         likes {
           name
           id
-          profile_img
+          profile_img{
+            ... image
+          }
         }
         
         comments {
@@ -46,12 +58,16 @@ query User($id: ID!){
           user {
             id
             name
-            profile_img
+            profile_img {
+              ... image
+            }
           }
           likes {
             name
             id
-            profile_img
+            profile_img {
+              ... image
+            }
           }
         }
       }
@@ -75,6 +91,13 @@ fragment date on Date {
   date
   time
   full_date
+}
+
+fragment image on Image  {
+  url
+  id
+  public_id
+  secure_url
 }
 `
 export default USER

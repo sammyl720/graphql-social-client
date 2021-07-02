@@ -5,7 +5,12 @@ import Posts from '../posts/Posts'
 import Head from 'next/head'
 import Context from '../../context/general/Context'
 import CreatePost from '../modals/CreatePost'
-const UserProfile = ({ user }) => {
+
+import { User } from '../../interfaces'
+interface UserProfileProps {
+  user: User
+}
+const UserProfile:React.FC<UserProfileProps> = ({ user }) => {
   const [toggleCreateModel, setToggleCreateModal] = useState(false)
   const { me } = useContext(Context)
   const [view, setView] = useState("posts")
@@ -24,7 +29,7 @@ const UserProfile = ({ user }) => {
           )}
           <div className='flex flex-col gap-2'>
             <figure className={`flex justify-between items-center flex-col max-content  max-w-md mx-auto p-5`}>
-              <img className='profile' src={user.profile_img || '/imgs/user.png'} alt="profile picture" />
+              <img className='profile' src={user.profile_img.secure_url || '/imgs/user.png'} alt="profile picture" />
               <figcaption className='mt-1'>
                 <Link href={`/profile/${user.id}`}>
                     <a>{user.name}</a>

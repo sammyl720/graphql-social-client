@@ -1,13 +1,18 @@
 import React, { useState } from 'react'
 import Badge from '../design/Badge'
-export default function Post({ post }) {
+
+import { Post as PostType } from '../../interfaces'
+
+interface PostProps {
+  post: PostType
+}
+export default function Post({ post }: PostProps) {
   const date = new Date(post.created_on.full_date)
-  console.log(date.getTime())
   const [drawer, setDrawer] = useState(false)
   return (
     <article className='flex  p-2 my-2 bg-gray-50 rounded shadow'>
       <figure className="flex flex-col min-w-max mr-2 items-center border">
-        <img className='profile-small' src={`${post.user.profile_img || '/imgs/user.png'}`} alt="user" />
+        <img className='profile-small' src={`${post.user.profile_img.secure_url || '/imgs/user.png'}`} alt="user" />
       </figure>
       <section className='flex flex-col justify-between w-full h-full p-2'>
         <small className='pl-1 mb-2'>{post.user.name} <time className="text-xs text-gray-500 ml-2" dateTime={date.toISOString()}>{post.created_on.date}</time></small>

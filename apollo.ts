@@ -17,7 +17,7 @@ const authLink = new ApolloLink((operation, forward) => {
     }
     operation.setContext({
       headers: {
-      authorization: token ? `Bearer ${token}` : '',
+      Authorization: token ? `Bearer ${token}` : '',
       pizza: 'with-fries'
     }})
     return forward(operation);
