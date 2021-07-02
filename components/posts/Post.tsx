@@ -15,7 +15,7 @@ export default function Post({ post }: PostProps) {
       <figure className="flex flex-col min-w-max mr-2 items-center border">
         {post.user.profile_img && (
           <Image 
-            cloudName={process.env.CLOUD_NAME}
+            cloudName={process.env.NEXT_PUBLIC_CLOUD_NAME}
             public_id={post.user.profile_img.public_id}>
               <Transformation width='100' crop='scale' />
           </Image>
@@ -25,7 +25,7 @@ export default function Post({ post }: PostProps) {
         <small className='pl-1 mb-2'>{post.user.name} <time className="text-xs text-gray-500 ml-2" dateTime={date.toISOString()}>{post.created_on.date}</time></small>
         {post.images.length > 0 && (
           <Image 
-          cloudName={process.env.CLOUD_NAME}
+          cloudName={process.env.NEXT_PUBLIC_CLOUD_NAME}
           publicId={post.images[0].public_id}>
             <Transformation width='200' crop='scale' />
         </Image>
