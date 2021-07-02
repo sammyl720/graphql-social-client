@@ -9,7 +9,6 @@ const login =  async (req:NextApiRequest, res: NextApiResponse) => {
       })
       
       res.setHeader('Set-Cookie', setToken)
-      console.log(res.getHeaders())
       return res.status(200).json({ status: 200, message: "Logged in"})
     case 'GET':
       const cookies = cookie.parse(req.headers.cookie || '');

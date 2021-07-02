@@ -45,10 +45,6 @@ const Signup = () => {
         <title>Kesher | Signup</title>
         <meta name="description" content="Signup to connect to your peers." />
       </Head>
-      {error && (
-        <Toast message={error} type='error' onLeave={() => setError(null) } />
-
-      )}
       <h1 className='text-indigo-900 text-4xl mx-auto'>Signup</h1>
       <Input
         title="Enter your E-Mail"

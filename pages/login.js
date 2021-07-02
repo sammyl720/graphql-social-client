@@ -34,9 +34,6 @@ const Login = () => {
         <title>Kesher | Login</title>
         <meta name="description" content="Login to connect to your peers." />
       </Head>
-      {error && (
-        <Toast message={error} type='error' onLeave={() => setError(null) } />
-      )}
       {loading ? <Loader /> : (
         <>
           <h1 className='text-indigo-900 text-4xl mx-auto'>Login</h1>

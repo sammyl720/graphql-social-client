@@ -38,14 +38,7 @@ function Profile({ uid }) {
   })
   if (loading) return <Loader />;
   return (
-    <div className="text-2xl w-100 h-100">
-      {message && (
-        <Toast message={message} type='success' onLeave={() => setMessage(null) } />
-      )}
-
-      {error && (
-        <Toast message={error} type='error' onLeave={() => setError(null) } />
-      )}
+    <div className="text-2xl h-100">
       {user && (
         <UserProfile user={user} />
       )}

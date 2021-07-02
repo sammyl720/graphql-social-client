@@ -12,7 +12,6 @@ import Context from '../context/general/Context'
 import ME from '../graphql/queries/me'
 
 function Home({ test }) {
-  console.log('props from server', test)
   const router = useRouter()
   const { token, me, loading, setLoading, setOwner, setError, error, message, setMessage } = useContext(Context)
   useEffect(() => {
@@ -41,10 +40,6 @@ function Home({ test }) {
     <div className="text-2xl text-blue-900 w-100 h-100">
       {message && (
         <Toast message={message} type='success' onLeave={() => setMessage(null) } />
-      )}
-
-      {error && (
-        <Toast message={error} type='error' onLeave={() => setError(null) } />
       )}
       <h1>Feed</h1>
     </div>

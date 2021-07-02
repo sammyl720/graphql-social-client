@@ -13,7 +13,8 @@ const reducer = (state, action) => {
     case SET_USER:
       return { ...state, user: action.payload }
     case SET_OWNER:
-      return { ...state, me: action.payload }
+      console.log('setting owner ' + action.payload.name)
+      return { ...state, me: action.payload, loading:false }
     case LOGOUT:
       window.localStorage.removeItem('token')
       return { ...state, user: null, token: null, me:null }
