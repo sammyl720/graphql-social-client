@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import Badge from '../design/Badge'
-
+import { Image, Transformation } from 'cloudinary-react'
 import { Post as PostType } from '../../interfaces'
 
 interface PostProps {
-  post: PostType
+  post: PostType;
+  key:String;
 }
 export default function Post({ post }: PostProps) {
   const date = new Date(post.created_on.full_date)
@@ -12,11 +13,24 @@ export default function Post({ post }: PostProps) {
   return (
     <article className='flex  p-2 my-2 bg-gray-50 rounded shadow'>
       <figure className="flex flex-col min-w-max mr-2 items-center border">
-        <img className='profile-small' src={`${post.user.profile_img.secure_url || '/imgs/user.png'}`} alt="user" />
+        {post.user.profile_img && (
+          <Image 
+            cloudName={process.env.CLOUD_NAME}
+            public_id={post.user.profile_img.public_id}>
+              <Transformation width='100' crop='scale' />
+          </Image>
+        )}
       </figure>
       <section className='flex flex-col justify-between w-full h-full p-2'>
         <small className='pl-1 mb-2'>{post.user.name} <time className="text-xs text-gray-500 ml-2" dateTime={date.toISOString()}>{post.created_on.date}</time></small>
-        <p className="leading-12 px-1 py-1 border-b">
+        {post.images.length > 0 && (
+          <Image 
+          cloudName={process.env.CLOUD_NAME}
+          publicId={post.images[0].public_id}>
+            <Transformation width='200' crop='scale' />
+        </Image>
+        )}
+        <p className="leading-12 px-1 my-2 py-1 border-b">
           {(post.text.length > 1 ) && !drawer ? (post.text.substr(0,50) + '...') : (post.text)}  
         </p>
           {(post.text.length > 1 ) && (

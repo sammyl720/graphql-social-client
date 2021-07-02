@@ -26,6 +26,7 @@ const ME = gql`
         }
       }
       posts {
+        id
         text
         images {
           ... image
@@ -51,6 +52,7 @@ const ME = gql`
         
         comments {
           text
+          id
           created_on {
             date
           }

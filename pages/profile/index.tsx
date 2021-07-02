@@ -12,29 +12,15 @@ import ME from '../../graphql/queries/me'
 
 function User() {
   const router = useRouter()
-  const { token, me, loading, setLoading, setOwner, setError, error, message, setMessage } = useContext(Context)
+  const { token, me, loading, setLoading, setOwner, setError, error, message, setMessage, loadMe } = useContext(Context)
   const [text, setText] = useState("This is a message")
   useEffect(() => {
     if(!token){
       router.push('/login')
+    } else {
+      loadMe()
     }
   }, [token])
-  const { data } = useQuery(ME, {
-    onCompleted: (data) => {
-      if(data.me.__typename == "User"){
-        setOwner(data.me)
-        setMessage(`Welcome back ${data.me.name}`)
-      } else {
-        console.log(data.me)
-        setError(data.me.message)
-      }
-      setLoading(false)
-    },
-    onError: (e) => {
-      setError(e.message)
-      setLoading(false)
-    }
-  })
   if (loading) return <Loader />;
   return (
     <div className="text-2xl w-100 h-100 ">

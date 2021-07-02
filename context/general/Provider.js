@@ -2,11 +2,12 @@ import React, { useEffect, useReducer } from 'react';
 import Context from './Context'
 import reducer from './reducer';
 import { LOGOUT, SET_ERROR, SET_LOADING, SET_MESSAGE, SET_OWNER, SET_TOKEN, SET_USER } from './types';
-import {  useMutation } from '@apollo/client'
+import {  useMutation, useLazyQuery } from '@apollo/client'
 
 import LOGIN from '../../graphql/mutations/login'
 import SIGN_UP from '../../graphql/mutations/signup'
-import axios from 'axios';
+import ADD_POST from '../../graphql/mutations/addPost';
+import ME from '../../graphql/queries/me'
 
 function Provider ({ children }) {
   let token = null;
@@ -35,6 +36,26 @@ function Provider ({ children }) {
     dispatch({ type: SET_TOKEN, payload: token })
   }
 
+
+  /// set current user
+  const [loadMe] = useLazyQuery(ME, {
+    onCompleted: (data) => {
+      console.log('called')
+      if(data.me.__typename == "User"){
+        setOwner(data.me)
+      } else {
+        console.log(data.me)
+        setError(data.me.message)
+      }
+      setLoading(false)
+    },
+    onError: (e) => {
+      console.log(e)
+      setError(e.message)
+      setLoading(false)
+    },
+    pollInterval: 15000
+  })
   const setLoading = (loading) => {
     if(typeof loading !== 'boolean') return;
     dispatch({ type: SET_LOADING, payload: loading })
@@ -92,6 +113,28 @@ function Provider ({ children }) {
       
   })
 
+  // createPost
+
+  const [addPost] = useMutation(ADD_POST, {
+    onCompleted: (data) => {
+      console.log(data)
+      if(data.addPost.errors){
+        setLoading(false)
+        setError(data.addPost.message)
+      } else {
+        setMessage(`You posted '${data.addPost.text}.'`)
+        setLoading(false);
+      }
+    },
+    onError: (error) => {
+      setLoading(false);
+      setError(error.message || '')
+      console.log(error);;
+    },
+
+  });
+  
+
   const logout = () => {
     dispatch({ type: LOGOUT })
   }
@@ -126,7 +169,9 @@ function Provider ({ children }) {
       signup,
       login,
       setUser,
-      setOwner
+      setOwner,
+      addPost,
+      loadMe
     }}>
       {children}
     </Context.Provider>

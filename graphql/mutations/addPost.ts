@@ -25,8 +25,7 @@ mutation AddPost($text: [String!], $images: [ImageInput], $public: Boolean ){
     }
   }
   
-}
-`
+}`
 
 
 export default ADD_POST;

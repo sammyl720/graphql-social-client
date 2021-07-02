@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useContext } from 'react'
+import Context from '../../context/general/Context';
 import { User } from '../../interfaces'
-import UPLOAD from 'imgs/upload.png'
 import Input from '../design/Input';
 interface CreatePostProps {
   user: User;
@@ -13,15 +13,21 @@ interface Values {
   public: boolean;
   resized?: string;
 }
+
+interface Img {
+  base64: string;
+  filename:string;
+}
 export default function CreatePost(props: CreatePostProps) {
+
+  const { addPost, loading, setLoading } = useContext(Context)
   const divRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
   
   const [text, setText] = useState<string>('')
   const [isPublic, setIsPublic] = useState<boolean>(true)
-  const [imgs, setImgs] = useState<{ base64: string;filename:string}[]>([])
-  const [inputFile, setInputFile] = useState<File>(null)
-  const [resized, setResized] = useState<{ base64:string; filename:string}>({ filename: '', base64: ''});
+  const [imgs, setImgs] = useState<Img[]>([])
+  const [resized, setResized] = useState<Img>({ filename: '', base64: ''});
 
   useEffect(() => {
     if(imgRef.current){
@@ -35,8 +41,7 @@ export default function CreatePost(props: CreatePostProps) {
         let ctx = canvas.getContext('2d');
         ctx.drawImage(imgRef.current, 0, 0, canvas.width, canvas.height);
         let data = canvas.toDataURL('image/jpeg');
-        console.log(data)
-        setResized({ base64: data.toString(), filename: imgs[0].filename || '' })
+        setResized({ base64: data.toString(), filename: imgs[0].filename || 'default' })
       }
     }
   }, [imgs, imgRef])
@@ -49,13 +54,12 @@ export default function CreatePost(props: CreatePostProps) {
   const handleFileChange = (e:React.ChangeEvent<HTMLInputElement>) => {
 
     const file = e.currentTarget.files[0];
-    setInputFile(file)
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onload = function(event){
       setImgs([{
         base64: event.target.result.toString(),
-        filename: file.name
+        filename: file.name.split('.')[0]
       }])
     }
   }
@@ -63,13 +67,21 @@ export default function CreatePost(props: CreatePostProps) {
   const onSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      console.log(resized, text, isPublic)
+      const variables: {text: string; public:boolean; images?: Img } = {
+        text,
+        public: isPublic
+      }
+      if(!!resized.base64){
+        variables.images = resized;
+      }
+      setLoading(true)
+      addPost({ variables })
     } catch (error) {
       console.log(error)
     }
   }
   return (
-    <div ref={divRef} className='modal absolute z-50 rounded-lg bg-white shadow-md inset-1 p-3  flex flex-col items-center h-auto'>
+    <div ref={divRef} className='modal '>
       <span onClick={dismiss} className='ml-auto cursor-pointer'>
         <i className="fas fa-times" />
       </span>
@@ -102,7 +114,7 @@ export default function CreatePost(props: CreatePostProps) {
           handleFileChange(e)
         }} />
         {resized.base64 && (
-          <img className='max-w-60 my-3 mx-auto h-auto' src={resized.base64} alt="test" />
+          <img className='mx-auto h-auto' src={resized.base64} alt="test" />
         )}
         
         <small className='mx-auto'>
