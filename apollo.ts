@@ -5,7 +5,7 @@ import {
   InMemoryCache,
 } from "@apollo/client";
 
-const httpLink = new HttpLink({uri: process.env.API_URL})
+const httpLink = new HttpLink({uri: process.env.API_URL })
 const authLink = new ApolloLink((operation, forward) => {
 
       // Retrieve the authorization token from local storage.
