@@ -41,7 +41,7 @@ const Input = ({
         </label>
         <input 
         tabIndex={tabIndex}
-        className={`focus:outline-none = flex-grow ml-4 p-2 rounded-r-md `}
+        className={`focus:outline-none flex-grow ml-4 p-2 rounded-r-md`}
         type={type} 
         name={name} 
         id={name} 

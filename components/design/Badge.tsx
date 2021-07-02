@@ -12,7 +12,7 @@ interface BadgeProps {
 
 const Badge:React.FC<BadgeProps> = ({ icon, text, onClick, size, row }) => {
   return (
-  <div className={`flex my-2 md:my-0  cursor-pointer ${row ? 'gap-4 justify-center' : 'flex-col justify-between'} items-center  p-2 ${size == 'small' && 'text-sm'} `} onClick={onClick}>
+  <div className={`flex my-2 md:my-0  cursor-pointer ${row ? 'gap-4 justify-center' : 'flex-col justify-between'} items-center  p-2 ${size == 'small' && 'text-sm'} ${size == 'medium' && 'text-md'}`} onClick={onClick}>
     <i className={icon + ' mb-2'} />
     <strong>{text}</strong>
   </div>

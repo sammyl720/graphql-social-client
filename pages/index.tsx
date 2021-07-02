@@ -20,6 +20,7 @@ function Home({ test }) {
       router.push('/login')
     }
   }, [token])
+  
   const { data } = useQuery(ME, {
     onCompleted: (data) => {
       if(data.me.__typename == "User"){

@@ -81,11 +81,11 @@ export default function CreatePost(props: CreatePostProps) {
     }
   }
   return (
-    <div ref={divRef} className='modal'>
+    <div ref={divRef} className='modal w-full'>
       <span onClick={dismiss} className='ml-auto cursor-pointer'>
         <i className="fas fa-times" />
       </span>
-      <form className='flex flex-col w-full p-2 h-full justify-evenly' onSubmit={onSubmit}>
+      <form className='flex flex-col w-full p-4 h-full justify-evenly' onSubmit={onSubmit}>
         <h1 className='text-bold text-center'>Create Post</h1>
         <Input 
           value={text}
