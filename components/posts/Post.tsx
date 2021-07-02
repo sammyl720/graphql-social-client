@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Badge from '../design/Badge'
 import { Image, Transformation } from 'cloudinary-react'
 import { Post as PostType } from '../../interfaces'
+import getTimeDifference from '../../utils/getTimeDiffernce'
 
 interface PostProps {
   post: PostType;
@@ -9,6 +10,7 @@ interface PostProps {
 }
 export default function Post({ post }: PostProps) {
   const date = new Date(post.created_on.full_date)
+  const { text } = getTimeDifference(date)
   const [drawer, setDrawer] = useState(false)
   return (
     <article className='flex  p-2 my-2 bg-gray-50 rounded shadow'>
@@ -18,11 +20,12 @@ export default function Post({ post }: PostProps) {
             cloudName={process.env.NEXT_PUBLIC_CLOUD_NAME}
             public_id={post.user.profile_img.public_id}>
               <Transformation width='100' crop='scale' />
+              <Transformation radius='10' />
           </Image>
         )}
       </figure>
       <section className='flex flex-col justify-between w-full h-full p-2'>
-        <small className='pl-1 mb-2'>{post.user.name} <time className="text-xs text-gray-500 ml-2" dateTime={date.toISOString()}>{post.created_on.date}</time></small>
+        <small className='pl-1 mb-2'>{post.user.name} <time className="text-xs text-gray-500 ml-2" dateTime={date.toISOString()}>{text}</time></small>
         {post.images.length > 0 && (
           <Image 
           cloudName={process.env.NEXT_PUBLIC_CLOUD_NAME}
