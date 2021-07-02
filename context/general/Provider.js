@@ -40,7 +40,6 @@ function Provider ({ children }) {
   /// set current user
   const [loadMe] = useLazyQuery(ME, {
     onCompleted: (data) => {
-      console.log('called')
       if(data.me.__typename == "User"){
         setOwner(data.me)
       } else {
@@ -63,9 +62,11 @@ function Provider ({ children }) {
 
   const setOwner = (owner) => {
     if(!owner.name){
+      console.log('no userr')
       setError("user not found")
       return null;
     }
+    console.log(state.token)
     if(!state.token) return null;
     dispatch({ type: SET_OWNER, payload: owner })
   }
@@ -117,13 +118,14 @@ function Provider ({ children }) {
 
   const [addPost] = useMutation(ADD_POST, {
     onCompleted: (data) => {
-      console.log(data)
       if(data.addPost.errors){
         setLoading(false)
         setError(data.addPost.message)
       } else {
+        console.log('you posted')
         setMessage(`You posted '${data.addPost.text}.'`)
         setLoading(false);
+        loadMe()
       }
     },
     onError: (error) => {

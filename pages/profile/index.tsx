@@ -12,8 +12,7 @@ import ME from '../../graphql/queries/me'
 
 function User() {
   const router = useRouter()
-  const { token, me, loading, setLoading, setOwner, setError, error, message, setMessage, loadMe } = useContext(Context)
-  const [text, setText] = useState("This is a message")
+  const { token, me, loading, setLoading, setOwner, setError, error, loadMe } = useContext(Context)
   useEffect(() => {
     if(!token){
       router.push('/login')
