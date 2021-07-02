@@ -1,6 +1,6 @@
 import { LOGOUT, SET_ERROR, SET_LOADING, SET_MESSAGE, SET_OWNER, SET_TOKEN, SET_USER } from "./types";
 
-export default (state, action) => {
+const reducer = (state, action) => {
   switch(action.type){
     case SET_TOKEN:
       return { ...state, token: action.payload };
@@ -21,3 +21,5 @@ export default (state, action) => {
       return state;
   }
 }
+
+export default reducer;
