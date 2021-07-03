@@ -10,6 +10,7 @@ import SIGN_UP from '../../graphql/mutations/signup'
 import ADD_POST from '../../graphql/mutations/addPost';
 import TOGGLE_LIKE_POST from '../../graphql/mutations/toggleLikePost';
 import ME from '../../graphql/queries/me'
+import { POST_FRAGMENT } from '../../graphql/fragments' 
 
 
 function Provider ({ children }) {
@@ -132,8 +133,6 @@ function Provider ({ children }) {
       } else {
         console.log('you posted')
         setMessage(`You posted '${data.addPost.text}.'`)
-        addUserPost(state.me, data.addPost)
-        loadMe()
         setLoading(false)
       }
     },
@@ -142,7 +141,21 @@ function Provider ({ children }) {
       setError(error.message || '')
       console.log(error);;
     },
-
+    update(cache, {data}) {
+      if(data.addPost.id){
+        const { addPost: newPost } = data;
+        const { me: { posts: existingPosts } } = cache.readQuery({ query: ME })
+        console.log(newPost)
+        cache.writeQuery({
+          query: ME,
+          data: {
+            ...state.me,
+            posts: [newPost, ...existingPosts]
+          }
+        })
+        loadMe()
+      }
+    }
   });
   
 
