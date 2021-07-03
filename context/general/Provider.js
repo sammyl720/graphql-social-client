@@ -76,6 +76,7 @@ function Provider ({ children }) {
   // login
   const [login] = useMutation(LOGIN,
     {
+      fetchPolicy: 'no-cache',
       onCompleted: (data) => {
         // console.log(data)
         if(data.login.errors){
@@ -97,6 +98,7 @@ function Provider ({ children }) {
   // login
   const [signup] = useMutation(SIGN_UP,
     {
+      fetchPolicy: 'no-cache',
       onCompleted: (data) => {
         // console.log(data)
         if(data.signup.errors){

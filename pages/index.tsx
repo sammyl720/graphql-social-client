@@ -2,16 +2,13 @@ import { useState } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useQuery } from '@apollo/client'
-import UserProfile from '../components/design/UserProfile'
-import cookie from 'cookie'
-import axios, { AxiosResponse } from 'axios'
 import Loader from '../components/design/Loader'
 import Toast from '../components/design/Toast'
 import { useContext, useEffect } from 'react'
 import Context from '../context/general/Context'
 import ME from '../graphql/queries/me'
 
-function Home({ test }) {
+function Home() {
   const router = useRouter()
   const { token, me, loading, setLoading, setOwner, setError, error, message, setMessage } = useContext(Context)
   useEffect(() => {

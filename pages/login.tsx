@@ -26,7 +26,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     setLoading(true)
-    login({ variables: values})
+    login({ variables: values, fetchPolicy: 'no-cache'})
   }
   return (
     <form onSubmit={handleSubmit} className='bg-white max-w-sm flex flex-col p-4 mx-auto my-auto border rounded-lg shadow'>

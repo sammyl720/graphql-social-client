@@ -58,6 +58,9 @@ const getTimeDifference = (before:Date): {
     }
     return subtext;
   }).join(',') + ' ago'
+  if(text == ' ago'){
+    text = 'Just now'
+  }
   console.log(text);
   return {
     text,
