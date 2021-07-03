@@ -1,4 +1,5 @@
 export interface User {
+  __typename: 'User';
   id?: string;
   name?: string;
   verified?: boolean;
@@ -15,6 +16,7 @@ export interface User {
 }
 
 export interface Post {
+  __typename: 'Post';
   id?:string;
   text?:string;
   likeCount?:string;
@@ -29,6 +31,7 @@ export interface Post {
 }
 
 export interface Comment {
+  __typename: 'Comment';
   id?: string;
   text?: string[];
   images?: Image[];
@@ -42,6 +45,7 @@ export interface Comment {
 }
 
 export interface Date {
+  __typename: 'Date';
   unix?:string;
   full_date?:string;
   utc?:string;
@@ -50,6 +54,7 @@ export interface Date {
 }
 
 export interface Image {
+    __typename: 'Image';
    id?: string;
    asset_id?: string;
    public_id?:string;

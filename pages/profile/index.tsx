@@ -20,7 +20,7 @@ function User() {
   useEffect(() => {}, [me])
   if (loading) return <Loader />;
   return (
-    <div className=" max-w-screen-md mx-auto h-100 ">
+    <div className="max-w-screen-lg mx-auto h-100 ">
       {me && (
         <UserProfile user={me} />
       )}

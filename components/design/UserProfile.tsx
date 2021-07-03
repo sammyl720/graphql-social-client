@@ -16,17 +16,22 @@ const UserProfile:React.FC<UserProfileProps> = ({ user }) => {
   useEffect(() => {}, [me])
   const [view, setView] = useState("posts")
   return (
-    <div className='flex flex-col max-w-lg mx-auto'>
+    <div className='flex flex-col sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto'>
       <Head>
         <title>Kesher | Profile </title>
         <meta name="description" content={`${user.name} is on kesher.`} />
       </Head>
-          <i className="fas fa-pen ml-auto cursor-pointer" onClick={() => {
-            setToggleCreateModal(oldToggle => !oldToggle)
-          }} />
-          { toggleCreateModel && (
 
-            <CreatePost user={user} onDismiss={setToggleCreateModal} />
+          { user.id == me.id && (
+              <>
+                <i className="fas fa-pen ml-auto mr-2 cursor-pointer" onClick={() => {
+                setToggleCreateModal(oldToggle => !oldToggle)
+              }} />
+              { toggleCreateModel && (
+    
+                <CreatePost user={user} onDismiss={setToggleCreateModal} />
+              )}
+            </>
           )}
           <div className='flex flex-col gap-2'>
             <UserDashboard user={user} setView={setView} />

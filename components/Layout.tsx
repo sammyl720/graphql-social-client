@@ -23,7 +23,7 @@ function Layout ({ children }) {
       {message && (
         <Toast message={message} type='success' onLeave={() => setMessage(null) } />
       )}
-      <main className='p-4 mt-14 h-full w-screen lg:max-w-lg mx-auto'>
+      <main className='p-4 mt-14 h-full w-screen xl:max-w-2xl mx-auto'>
 
         {children}
       </main>

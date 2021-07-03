@@ -6,14 +6,15 @@ interface BadgeProps {
   text?: String;
   onClick?: () => any;
   size?: "small" | "medium" | "large"
-  row?: boolean
+  row?: boolean,
+  onIconClick?: () => any;
 }
 
 
-const Badge:React.FC<BadgeProps> = ({ icon, text, onClick, size, row }) => {
+const Badge:React.FC<BadgeProps> = ({ icon, text, onClick, size, row, onIconClick }) => {
   return (
   <div className={`flex my-2 md:my-0  cursor-pointer ${row ? 'gap-4 justify-center' : 'flex-col justify-between'} items-center  p-2 ${size == 'small' && 'text-sm'} ${size == 'medium' && 'text-md'}`} onClick={onClick}>
-    <i className={icon + ' mb-2'} />
+    <i className={icon + ' mb-2'} onClick={onIconClick} />
     <strong>{text}</strong>
   </div>
   )

@@ -1,17 +1,23 @@
-import React, { useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import Badge from '../design/Badge'
 import { Image, Transformation } from 'cloudinary-react'
 import { Post as PostType } from '../../interfaces'
 import getTimeDifference from '../../utils/getTimeDiffernce'
+import Context from '../../context/general/Context'
 
 interface PostProps {
   post: PostType;
   key:String;
 }
 export default function Post({ post }: PostProps) {
+  const { me, toggleLikePost } = useContext(Context);
   const date = new Date(post.created_on.full_date)
   const { text } = getTimeDifference(date)
   const [drawer, setDrawer] = useState(false)
+  const [toggleLike, setToggleLike] = useState<boolean>(false)
+  useEffect(() => {
+    setToggleLike(post.likes.some(user => user.id == me.id))
+  }, [post.likes])
   return (
     <article className='flex flex-col p-4 my-2 bg-gray-50 rounded shadow'>
       <figure className="flex mr-2 items-center">
@@ -50,7 +56,9 @@ export default function Post({ post }: PostProps) {
             </div>
             )}
             <div className="flex items-center justify-between m-1 mt-2">
-              <Badge text={`${post.likes.length}`} icon="far fa-heart" row={true} />
+              <Badge text={`${post.likes.length}`} icon={`fas fa-heart ${toggleLike && 'text-red-400'}`} onIconClick={() => {
+                toggleLikePost({ variables: { id: post.id }})
+              }} row={true} />
               <Badge text={`${post.comments.length}`} icon="far fa-comments" row={true} />
             </div>
       </section>

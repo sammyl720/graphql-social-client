@@ -18,10 +18,9 @@ const getTimeDifference = (before:Date): {
     week: 0,
     day: 0,
     hour: 0,
-    minute: 0,
-    second: 0
+    minute: 0
   }
-  while(differenceInMs > 10000) {
+  while(differenceInMs > (minute * 1.2)) {
     if(differenceInMs > month) {
       result.month++;
       differenceInMs -= month;
@@ -37,9 +36,6 @@ const getTimeDifference = (before:Date): {
     } else if (differenceInMs > minute){
       differenceInMs -= minute;
       result.minute++;
-    } else if (differenceInMs > second){
-      result.second++;
-      differenceInMs -= second;
     }
   }
 
@@ -57,11 +53,13 @@ const getTimeDifference = (before:Date): {
       return subtext.slice(0,-1)
     }
     return subtext;
-  }).join(',') + ' ago'
-  if(text == ' ago'){
+  }).join(',')
+  if(/^[^,]+$/.test(text)){
     text = 'Just now'
+  } else {
+    let lastComma = text.lastIndexOf(',')
+    text = text.slice(0,lastComma) + ' ago'
   }
-  console.log(text);
   return {
     text,
     list,

@@ -3,11 +3,14 @@ import Context from './Context'
 import reducer from './reducer';
 import { LOGOUT, SET_ERROR, SET_LOADING, SET_MESSAGE, SET_OWNER, SET_TOKEN, SET_USER } from './types';
 import {  useMutation, useLazyQuery } from '@apollo/client'
-
+import client from '../../apollo';
+import {addUserPost} from '../../caching/index'
 import LOGIN from '../../graphql/mutations/login'
 import SIGN_UP from '../../graphql/mutations/signup'
 import ADD_POST from '../../graphql/mutations/addPost';
+import TOGGLE_LIKE_POST from '../../graphql/mutations/toggleLikePost';
 import ME from '../../graphql/queries/me'
+
 
 function Provider ({ children }) {
   let token = null;
@@ -44,7 +47,7 @@ function Provider ({ children }) {
       if(data.me.__typename == "User"){
         setOwner(data.me)
       } else {
-        // console.log(data.me)
+        console.log(data.me, 'loading user')
         setError(data.me.message)
         setLoading(false)
       }
@@ -54,7 +57,7 @@ function Provider ({ children }) {
       setError(e.message)
       setLoading(false)
     },
-    pollInterval: 15000
+    pollInterval: 5000
   })
   const setLoading = (loading) => {
     if(typeof loading !== 'boolean') return;
@@ -95,7 +98,9 @@ function Provider ({ children }) {
       },
       
   })
-  // login
+
+
+
   const [signup] = useMutation(SIGN_UP,
     {
       fetchPolicy: 'no-cache',
@@ -119,7 +124,6 @@ function Provider ({ children }) {
   })
 
   // createPost
-
   const [addPost] = useMutation(ADD_POST, {
     onCompleted: (data) => {
       if(data.addPost.errors){
@@ -128,8 +132,9 @@ function Provider ({ children }) {
       } else {
         console.log('you posted')
         setMessage(`You posted '${data.addPost.text}.'`)
-        setLoading(false);
-        loadMe({})
+        addUserPost(state.me, data.addPost)
+        loadMe()
+        setLoading(false)
       }
     },
     onError: (error) => {
@@ -140,6 +145,25 @@ function Provider ({ children }) {
 
   });
   
+
+  // like post 
+  const [toggleLikePost] = useMutation(TOGGLE_LIKE_POST, {
+    onCompleted: (data) => {
+      console.log(data.toggleLikePost)
+      // status means that mutation did not cencounter any errors on server
+      if(data.toggleLikePost.status){
+        // update the ui
+        const { status } = data.toggleLikePost;
+        console.log(status)
+      } else {
+        setError(data.toggleLikePost.message)
+      }
+    },
+    onError: (error) => {
+      setError(error.message)
+      console.log(error)
+    }
+  })
 
   const logout = () => {
     dispatch({ type: LOGOUT })
@@ -177,7 +201,8 @@ function Provider ({ children }) {
       setUser,
       setOwner,
       addPost,
-      loadMe
+      loadMe,
+      toggleLikePost
     }}>
       {children}
     </Context.Provider>

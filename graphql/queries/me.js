@@ -1,4 +1,5 @@
 import {gql} from '@apollo/client';
+import { POST_FRAGMENT, DATE_FRAGMENT, IMAGE_FRAGMENT, COMMENT_FRAGMENT } from '../fragments';
 
 const ME = gql`
 {
@@ -10,7 +11,7 @@ const ME = gql`
       email
       profile_img {
           ... image
-        }
+      }
       followers {
         id
         name
@@ -26,63 +27,15 @@ const ME = gql`
         }
       }
       posts {
-        id
-        text
-        images {
-          ... image
-        }
-        user {
-          id
-          name
-          profile_img {
-            ... image
-          }
-        }
-        created_on {
-          ... date
-        }
-        
-        likes {
-          name
-          id
-          profile_img {
-            ... image
-          }
-        }
-        
-        comments {
-          text
-          id
-          created_on {
-            date
-          }
-          user {
-            id
-            name
-            profile_img {
-              ... image
-            }
-          }
-          likes {
-            name
-            id
-            profile_img {
-              ... image
-            }
-          }
-          images {
-            ... image
-          }
-        }
+        ... postFragment
       }
       date_joined {
-        ... date
+        ... dateFragment
       }
       last_login {
-        ... date
+        ... dateFragment
       }
-    }
-    
+    }    
     ... on Error {
       message
       errors
@@ -91,17 +44,14 @@ const ME = gql`
   }
 }
 
-fragment date on Date {
-  date
-  time
-  full_date
-}
+${POST_FRAGMENT}
 
-fragment image on Image  {
-  url
-  id
-  public_id
-  secure_url
-}
+${COMMENT_FRAGMENT}
+
+${DATE_FRAGMENT}
+
+${IMAGE_FRAGMENT}
 `
+
+
 export default ME

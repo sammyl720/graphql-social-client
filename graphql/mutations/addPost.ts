@@ -1,31 +1,23 @@
 
 import { gql } from 'graphql-tag'
+import { COMMENT_FRAGMENT, DATE_FRAGMENT, IMAGE_FRAGMENT, POST_FRAGMENT } from '../fragments'
 const ADD_POST = gql`
 mutation AddPost($text: [String!], $images: [ImageInput], $public: Boolean ){
   addPost(data: { text: $text, images: $images, public: $public}){
     ... on Post{
-      text
-      likeCount
-      created_on {
-        unix
-        full_date
-      }
-      id
-      images {
-        url
-        id
-        secure_url
-        created_at
-        public_id
-      }
+      ... postFragment
     }
     ... on Error{
-      message
       errors
+      message
     }
   }
-  
-}`
+}
+${POST_FRAGMENT}
+${DATE_FRAGMENT}
+${IMAGE_FRAGMENT}
+${COMMENT_FRAGMENT}
+`
 
 
 export default ADD_POST;
