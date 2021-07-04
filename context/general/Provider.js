@@ -2,13 +2,14 @@ import React, { useEffect, useReducer } from 'react';
 import Context from './Context'
 import reducer from './reducer';
 import { LOGOUT, SET_ERROR, SET_LOADING, SET_MESSAGE, SET_OWNER, SET_TOKEN, SET_USER } from './types';
-import {  useMutation, useLazyQuery } from '@apollo/client'
+import {  useMutation, useLazyQuery, gql } from '@apollo/client'
 import client from '../../apollo';
 import {addUserPost} from '../../caching/index'
 import LOGIN from '../../graphql/mutations/login'
 import SIGN_UP from '../../graphql/mutations/signup'
 import ADD_POST from '../../graphql/mutations/addPost';
 import TOGGLE_LIKE_POST from '../../graphql/mutations/toggleLikePost';
+import DELETE_POST from '../../graphql/mutations/deletePost';
 import ME from '../../graphql/queries/me'
 import { POST_FRAGMENT } from '../../graphql/fragments' 
 
@@ -44,11 +45,9 @@ function Provider ({ children }) {
   /// set current user
   const [loadMe] = useLazyQuery(ME, {
     onCompleted: (data) => {
-      console.log('loaded data me')
       if(data.me.__typename == "User"){
         setOwner(data.me)
       } else {
-        console.log(data.me, 'loading user')
         setError(data.me.message)
         setLoading(false)
       }
@@ -57,8 +56,7 @@ function Provider ({ children }) {
       console.log(e)
       setError(e.message)
       setLoading(false)
-    },
-    pollInterval: 5000
+    }
   })
   const setLoading = (loading) => {
     if(typeof loading !== 'boolean') return;
@@ -82,10 +80,8 @@ function Provider ({ children }) {
     {
       fetchPolicy: 'no-cache',
       onCompleted: (data) => {
-        // console.log(data)
         if(data.login.errors){
-          console.log("errors")
-          setError(data.login.message)
+          setError(data.login.error)
         } else if(data.login.token){
           setMessage("Succesfuly signed in")
           setToken(data.login.token)
@@ -94,7 +90,7 @@ function Provider ({ children }) {
       },
       onError: (error) => {
         setError(error.message)
-        // console.log(error)
+        console.log(error)
         setLoading(false)
       },
       
@@ -145,14 +141,6 @@ function Provider ({ children }) {
       if(data.addPost.id){
         const { addPost: newPost } = data;
         const { me: { posts: existingPosts } } = cache.readQuery({ query: ME })
-        console.log(newPost)
-        cache.writeQuery({
-          query: ME,
-          data: {
-            ...state.me,
-            posts: [newPost, ...existingPosts]
-          }
-        })
         loadMe()
       }
     }
@@ -168,6 +156,7 @@ function Provider ({ children }) {
         // update the ui
         const { status } = data.toggleLikePost;
         console.log(status)
+        loadMe()
       } else {
         setError(data.toggleLikePost.message)
       }
@@ -175,9 +164,57 @@ function Provider ({ children }) {
     onError: (error) => {
       setError(error.message)
       console.log(error)
+    },
+    update: (cache, { data }) => {
+      if(data.toggleLikePost.status){
+        console.log('ewpm')
+        let idRgx = /\((?<postId>[a-f0-9]+)\)/i
+        let unliked = /unliked/.test(data.toggleLikePost.status)
+        console.log(data)
+        const id = data.toggleLikePost.status.match(idRgx).groups?.postId
+        if(id){
+          const identifier = `Post:${id}`;
+          cache.modify({
+            id: identifier,
+            fields: {
+              likes(likers, { readField }) {
+                if(!unliked){
+                  return [...likers, { __typename: 'User', id: state.me.id, name: state.me.name}]
+                } else {
+                  return likers.filter(liker => readField('id', liker) !== state.me.id)
+                }
+              },
+              likeCount(prevCount) {
+                return unliked ? prevCount - 1: prevCount + 1
+              }
+            }
+          })
+          loadMe()
+        }
+      }
     }
   })
 
+  const [deletePost] = useMutation(DELETE_POST, {
+    onCompleted: (data) => {
+      if(data.deletePost.status){
+        setMessage(data.deletePost.status)
+      } else if(data.deletePost.message){
+        setError(data.deletePost.message)
+      }
+    },
+    onError: (e) => console.log(e),
+    update(cache, {data}) {
+      let idRgx = /\((?<postId>[a-f0-9]+)\)/i
+      if(data.deletePost.status){
+        const id = data.deletePost.status.match(idRgx).groups?.postId
+        if(id){
+          const identifier = `Post:${id}`;
+          cache.evict(identifier)
+        }
+      }
+    }
+  })
   const logout = () => {
     dispatch({ type: LOGOUT })
   }
@@ -215,7 +252,8 @@ function Provider ({ children }) {
       setOwner,
       addPost,
       loadMe,
-      toggleLikePost
+      toggleLikePost,
+      deletePost
     }}>
       {children}
     </Context.Provider>

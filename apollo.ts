@@ -3,7 +3,9 @@ import {
   HttpLink,
   ApolloLink,
   InMemoryCache,
+  TypePolicies,
 } from "@apollo/client";
+import { Post, Comment } from "./interfaces";
 
 const httpLink = new HttpLink({uri: process.env.NEXT_PUBLIC_API_URL })
 const authLink = new ApolloLink((operation, forward) => {
@@ -22,9 +24,38 @@ const authLink = new ApolloLink((operation, forward) => {
     return forward(operation);
 });
 
+
+
+const typePolicies:TypePolicies = {
+  User: {
+    fields: {
+      posts: {
+        merge (existing = [], incoming: Post[]) {
+          return incoming
+        }
+      }
+    }
+  },
+
+  Post: {
+    fields: {
+      comments: {
+        merge (existing = [], incoming: Comment[]){
+          return incoming;
+        }
+      },
+      likes: {
+        merge (existing = [], incoming: string[]){
+          return incoming
+        }
+      }
+    }
+  }
+}
+
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({ typePolicies }),
 });
 
 export default client;

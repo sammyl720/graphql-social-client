@@ -10,16 +10,24 @@ interface PostProps {
   key:String;
 }
 export default function Post({ post }: PostProps) {
-  const { me, toggleLikePost } = useContext(Context);
+  const { me, toggleLikePost, deletePost } = useContext(Context);
   const date = new Date(post.created_on.full_date)
   const { text } = getTimeDifference(date)
   const [drawer, setDrawer] = useState(false)
+  const isPostOwner = post.user.id == me.id;
   const [toggleLike, setToggleLike] = useState<boolean>(false)
   useEffect(() => {
     setToggleLike(post.likes.some(user => user.id == me.id))
   }, [post.likes])
   return (
     <article className='flex flex-col p-4 my-2 bg-gray-50 rounded shadow'>
+      { isPostOwner && (
+        <div className='w-4 ml-auto' onClick={() => {
+          deletePost({ variables: { id: post.id }})
+        }}>
+          <i className='fas fa-trash text-red-600' />
+        </div>
+      )}
       <figure className="flex mr-2 items-center">
         {post.user.profile_img && (
           <Image 
