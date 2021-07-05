@@ -7,15 +7,15 @@ import Toast from '../components/design/Toast'
 import { useContext, useEffect } from 'react'
 import Context from '../context/general/Context'
 import ME from '../graphql/queries/me'
-
+import { memoryToken } from '../memory';
 function Home() {
   const router = useRouter()
-  const { token, me, loading, setLoading, setOwner, setError, error, message, setMessage } = useContext(Context)
+  const { me, loading, setLoading, setOwner, setError, error, message, setMessage } = useContext(Context)
   useEffect(() => {
-    if(!token){
+    if(!memoryToken()){
       router.push('/login')
     }
-  }, [token])
+  }, [memoryToken()])
   
   const { data } = useQuery(ME, {
     onCompleted: (data) => {

@@ -1,5 +1,8 @@
-
-
+export const second = 1000;
+export const minute = 60 * second;
+export const hour = 60 * minute;
+export const day = 24 * hour;
+export const week = 7 * day;
 const getTimeDifference = (before:Date): {
   text: String;
   list: { [key: string]: number}[],
@@ -7,11 +10,7 @@ const getTimeDifference = (before:Date): {
 } => {
   const now = Date.now()
   let differenceInMs = now - before.getTime()
-  const second = 1000;
-  const minute = 60 * second;
-  const hour = 60 * minute;
-  const day = 24 * hour;
-  const week = 7 * day;
+  
   const month = (4 * week) + Math.round(Math.random() * 3);
   let result = {
     month: 0,

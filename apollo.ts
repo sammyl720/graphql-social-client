@@ -6,27 +6,29 @@ import {
   TypePolicies,
 } from "@apollo/client";
 import { Post, Comment } from "./interfaces";
-
+import { memoryToken } from './memory'
 const httpLink = new HttpLink({uri: process.env.NEXT_PUBLIC_API_URL })
 const authLink = new ApolloLink((operation, forward) => {
+    // console.log(`Enviroment: ${process.browser ? 'CSR' : 'SSR' }`)
 
       // Retrieve the authorization token from local storage.
     // const token = localStorage.getItem('token');
     // Use the setContext method to set the HTTP headers.
-    let token = null;
-    if(process.browser){
-      token = localStorage.getItem('token')
+    let token = memoryToken();
+    if(process.browser && token){
+      operation.setContext({
+        headers: {
+        authorization: token && `Bearer ${token}`
+      }})
     }
-    operation.setContext({
-      headers: {
-      Authorization: token ? `Bearer ${token}` : ''
-    }})
     return forward(operation);
 });
 
 
 
 const typePolicies:TypePolicies = {
+  Query: {
+  },
   User: {
     fields: {
       posts: {

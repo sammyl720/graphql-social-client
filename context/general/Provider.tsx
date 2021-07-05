@@ -2,27 +2,22 @@ import React, { useEffect, useReducer } from 'react';
 import Context from './Context'
 import reducer from './reducer';
 import { LOGOUT, SET_ERROR, SET_LOADING, SET_MESSAGE, SET_OWNER, SET_TOKEN, SET_USER } from './types';
-import {  useMutation, useLazyQuery, gql } from '@apollo/client'
-import client from '../../apollo';
-import {addUserPost} from '../../caching/index'
+import {  useMutation, useLazyQuery} from '@apollo/client'
+
+import {minute} from '../../utils/getTimeDiffernce'
+import { expireTime, memoryToken } from '../../memory';
 import LOGIN from '../../graphql/mutations/login'
 import SIGN_UP from '../../graphql/mutations/signup'
 import ADD_POST from '../../graphql/mutations/addPost';
 import TOGGLE_LIKE_POST from '../../graphql/mutations/toggleLikePost';
 import DELETE_POST from '../../graphql/mutations/deletePost';
 import ME from '../../graphql/queries/me'
-import { POST_FRAGMENT } from '../../graphql/fragments' 
-
+import REFRESH_TOKEN from '../../graphql/queries/refresh';
+import { User } from '../../interfaces';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 
 function Provider ({ children }) {
-  let token = null;
-  useEffect(() => {
-    if(window != undefined && window.localStorage.token){
-      token = window.localStorage.token;
-    }
-  }, [])
   const initialState = {
-    token,
     loading: false,
     error: null,
     message: null,
@@ -34,57 +29,96 @@ function Provider ({ children }) {
 
   // dispatch functions
   // set token
-  const setToken = async (token) => {
-    if(!window.localStorage.token){
-      window.localStorage.setItem('token', token);
-    } 
-    dispatch({ type: SET_TOKEN, payload: token })
+  const setToken = async ({ token, expireTime: expiresIn }) => {
+    console.log(token, expiresIn)
+    if(token){
+      console.log('there is a token')
+      memoryToken(token)
+      console.log(`token set? ${memoryToken()}`)
+    } else {
+      memoryToken(null)
+    }
+    if(expiresIn){
+      expireTime(expiresIn)
+    } else {
+      expireTime(null)
+    }
   }
 
-
+  // request refresh token: local
+  const [refreshToken] = useLazyQuery(REFRESH_TOKEN,{
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
+    onCompleted: ({ refresh }) => {
+      console.log(refresh)
+      if(refresh.token){
+        console.log('refreshed!!!')
+        setToken(refresh.token)
+      } else {
+        logout()
+      }
+    },
+    onError: e => {
+      console.log(e)
+      setError(e.message)
+    }
+  })
   /// set current user
   const [loadMe] = useLazyQuery(ME, {
     onCompleted: (data) => {
       if(data.me.__typename == "User"){
         setOwner(data.me)
+        let timeLeft = (expireTime() - Date.now()) / minute;
+        console.log(`${timeLeft} minutes to refresh token`)
+        console.log(timeLeft < 14.7, timeLeft + ' less then 14.7?')
+        if(timeLeft < 14.5){
+          console.log('refreshing?')
+          refreshToken()
+        }
       } else {
         setError(data.me.message)
         setLoading(false)
       }
     },
+    pollInterval: 4000,
     onError: (e) => {
       console.log(e)
       setError(e.message)
       setLoading(false)
-    }
+    },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: 'cache-and-network'
   })
   const setLoading = (loading) => {
     if(typeof loading !== 'boolean') return;
     dispatch({ type: SET_LOADING, payload: loading })
   }
 
-  const setOwner = (owner) => {
+  const setOwner = (owner: User | null) => {
     console.log('setting owner')
     if(!owner.name){
       console.log('no userr')
       setError("user not found")
+      dispatch({ type: SET_OWNER, payload: null })
+      setToken({ token: null, expireTime: null  })
       return null;
     }
     console.log('checking token')
-    if(!state.token) return null;
+    if(!memoryToken()) owner = null;
     dispatch({ type: SET_OWNER, payload: owner })
   }
 
   // login
   const [login] = useMutation(LOGIN,
     {
-      fetchPolicy: 'no-cache',
       onCompleted: (data) => {
         if(data.login.errors){
           setError(data.login.error)
         } else if(data.login.token){
           setMessage("Succesfuly signed in")
-          setToken(data.login.token)
+          console.log(data.login, 'data.login.token object')
+          const { token, expireTime } = data.login;
+          setToken({ token, expireTime: parseInt(expireTime) })
         }
         setLoading(false)
       },
@@ -100,7 +134,6 @@ function Provider ({ children }) {
 
   const [signup] = useMutation(SIGN_UP,
     {
-      fetchPolicy: 'no-cache',
       onCompleted: (data) => {
         // console.log(data)
         if(data.signup.errors){
@@ -108,7 +141,8 @@ function Provider ({ children }) {
           setError(data.signup.message)
         } else if(data.signup.token){
           setMessage("Succesfuly signed up")
-          setToken(data.signup.token)
+          const { token, expireTime } = data.signup
+          setToken({ token, expireTime: parseInt(expireTime) })
         }
         setLoading(false)
       },
@@ -210,13 +244,22 @@ function Provider ({ children }) {
         const id = data.deletePost.status.match(idRgx).groups?.postId
         if(id){
           const identifier = `Post:${id}`;
-          cache.evict(identifier)
+          cache.evict({id})
         }
       }
     }
   })
-  const logout = () => {
+  const logout = async () => {
+    memoryToken(null)
+    expireTime(null)
     dispatch({ type: LOGOUT })
+    try {
+      const res: AxiosResponse = await axios(process.env.NEXT_PUBLIC_BASE_URL + '/logout')
+      console.log(res.status, 'LOGOUT STATUS')
+      console.log(res.data)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   // set message
@@ -238,6 +281,7 @@ function Provider ({ children }) {
   const setUser = (user) => {
     dispatch({ type: SET_USER, payload: user })
   }
+
   return (
     <Context.Provider value={{
       ...state,

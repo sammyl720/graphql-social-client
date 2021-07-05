@@ -5,6 +5,7 @@ const SIGN_UP = gql`
     signup(data: { email: $email, password: $password, name: $name }){
       ... on Token{
         token
+        expireTime
       }
       
       ... on Error {

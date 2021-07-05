@@ -1,3 +1,5 @@
+import { FetchResult, MutationFunctionOptions, OperationVariables, QueryLazyOptions } from "@apollo/client";
+
 export interface User {
   __typename: 'User';
   id?: string;
@@ -63,4 +65,33 @@ export interface Image {
    format?: string;
    resource_type?:string;
    created_at?:string;
+}
+
+export type Token = string | null;
+export type Message = string | null;
+export type ExpireTime = number | null;
+export interface IState {
+  loading: boolean | null;
+  error: Message;
+  message: Message;
+  me: User | null;
+  user: User | null;
+  setToken?: ({ token, expireTime: expiresIn }: { token: Token; expireTime: ExpireTime ; }) => Promise<void>,
+  setLoading?: (loading: boolean) => void;
+  setMessage?: (message: Message, timer?: number ) => void;
+  setError?: (message: Message, timer?: number ) => void;
+  logout?: () => void;
+  signup?: (options?: MutationFunctionOptions<any, OperationVariables>) => Promise<FetchResult<any, Record<string, any>, Record<string, any>>>;
+  login?: (options?: MutationFunctionOptions<any, OperationVariables>) => Promise<FetchResult<any, Record<string, any>, Record<string, any>>>;
+  loadMe?: (options?: QueryLazyOptions<OperationVariables>) => void
+  addPost?: (options?: MutationFunctionOptions<any, OperationVariables>) => Promise<FetchResult<any, Record<string, any>, Record<string, any>>>;
+  setUser?: (user: User | null) => void;
+  setOwner?: (owner: User | null) => any;
+  toggleLikePost?: (options?: MutationFunctionOptions<any, OperationVariables>) => Promise<FetchResult<any, Record<string, any>, Record<string, any>>>;
+  deletePost?: (options?: MutationFunctionOptions<any, OperationVariables>) => Promise<FetchResult<any, Record<string, any>, Record<string, any>>>
+}
+
+export interface IAction {
+  type?: string;
+  payload?: any;
 }

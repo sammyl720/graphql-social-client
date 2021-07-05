@@ -1,6 +1,7 @@
+import { IAction, IState } from "../../interfaces";
 import { LOGOUT, SET_ERROR, SET_LOADING, SET_MESSAGE, SET_OWNER, SET_TOKEN, SET_USER } from "./types";
 
-const reducer = (state, action) => {
+const reducer = (state:IState, action: IAction) => {
   switch(action.type){
     case SET_TOKEN:
       return { ...state, token: action.payload };
@@ -16,8 +17,7 @@ const reducer = (state, action) => {
       console.log('setting owner ' + action.payload.name)
       return { ...state, me: action.payload, loading:false }
     case LOGOUT:
-      window.localStorage.removeItem('token')
-      return { ...state, user: null, token: null, me:null }
+      return { ...state, user: null, message: 'User logged out', me:null }
     default:
       return state;
   }

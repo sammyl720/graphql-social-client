@@ -4,19 +4,19 @@ import { useRouter } from 'next/router'
 import Input from '../components/design/Input'
 import Context from '../context/general/Context'
 import Loader from '../components/design/Loader'
-import Toast from '../components/design/Toast'
 import Head from 'next/head'
+import { memoryToken } from '../memory'
 const Signup = () => {
   const router = useRouter()
-  const { signup, setError, error, token, setLoading, loading } = useContext(Context)
+  const { signup, setError, error, setLoading, loading } = useContext(Context)
   useEffect(() => {
     setLoading(true)
-    if(token){
+    if(memoryToken()){
       router.push('/profile')
     } else {
       setLoading(false)
     }
-  }, [token])
+  }, [memoryToken()])
   const [values, setValues] = useState({
     email: "",
     password: "",

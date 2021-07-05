@@ -5,6 +5,7 @@ const LOGIN = gql`
     login(data: { email: $email, password: $password}){
       ... on Token{
         token
+        expireTime
       }
       
       ... on Error {
