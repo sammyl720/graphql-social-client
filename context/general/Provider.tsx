@@ -1,4 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
+import { useRouter } from 'next/router'
 import Context from './Context'
 import reducer from './reducer';
 import { LOGOUT, SET_ERROR, SET_LOADING, SET_MESSAGE, SET_OWNER, SET_TOKEN, SET_USER } from './types';
@@ -12,6 +13,7 @@ import ADD_POST from '../../graphql/mutations/addPost';
 import TOGGLE_LIKE_POST from '../../graphql/mutations/toggleLikePost';
 import DELETE_POST from '../../graphql/mutations/deletePost';
 import ME from '../../graphql/queries/me'
+import GET_PUBLIC_USER from '../../graphql/queries/getPublicUser';
 import REFRESH_TOKEN from '../../graphql/queries/refresh';
 import { User } from '../../interfaces';
 import axios, { AxiosError, AxiosResponse } from 'axios';
@@ -25,6 +27,7 @@ function Provider ({ children }) {
     user: null
   }
 
+  const router = useRouter()
   const setTimer = () => {
     /** 
      * isRunning: a reactive var boolean to indicate whether timer is running;
@@ -270,12 +273,14 @@ function Provider ({ children }) {
   const logout = async () => {
     memoryToken(null)
     expireTime(null)
-    stopPollingMe()
+    stopPollingMe?.()
     dispatch({ type: LOGOUT })
     try {
       const res: AxiosResponse = await axios(process.env.NEXT_PUBLIC_BASE_URL + '/logout')
     } catch (error) {
       console.log(error)
+    } finally {
+      router.push('/')
     }
   }
 
@@ -295,13 +300,30 @@ function Provider ({ children }) {
     }, timer)
   }
 
-  const setUser = (user) => {
+  const setUser = (user: User ) => {
     dispatch({ type: SET_USER, payload: user })
   }
 
+  const [getPublicUser] = useLazyQuery(GET_PUBLIC_USER, {
+    onCompleted: (data) => {
+      console.log(data)
+      if(!data.publicUser.message){
+        setUser(data.publicUser)
+      } else {
+        setError(data.publicUser.message)
+        // router.push('/profile')
+      }
+    },
+    onError: (err) => {
+      setError(err.message)
+      console.log(err)
+    }
+  })
   return (
     <Context.Provider value={{
       ...state,
+      getPublicUser,
+      refreshToken,
       refetchMe,
       setToken,
       setLoading,

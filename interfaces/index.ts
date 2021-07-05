@@ -76,6 +76,8 @@ export interface IState {
   message: Message;
   me: User | null;
   user: User | null;
+  getPublicUser?: (options?: QueryLazyOptions<OperationVariables>) => void;
+  refreshToken?: (options?: QueryLazyOptions<OperationVariables>) => void;
   refetchMe?: (variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<any>>;
   setToken?: ({ token, expireTime: expiresIn }: { token: Token; expireTime: ExpireTime ; }) => Promise<void>,
   setLoading?: (loading: boolean) => void;

@@ -31,13 +31,18 @@ export default function CreatePost(props: CreatePostProps) {
 
   useEffect(() => {
     if(imgRef.current){
-      const maxWidth = 400;
+      let maxWidth = 500;
       imgRef.current.onload = function(e:Event){
         let canvas = document.createElement('canvas');
-        const scaleSize = maxWidth / imgRef.current.width;
-
+        let scaleSize = maxWidth / imgRef.current.width;
+        let curHeight = imgRef.current.height;
+        while(curHeight * scaleSize > 500){
+          maxWidth -= 5;
+          scaleSize = maxWidth / imgRef.current.width;
+          curHeight = imgRef.current.height * scaleSize;
+        }
         canvas.width = maxWidth
-        canvas.height = imgRef.current.height * scaleSize;
+        canvas.height = curHeight;
         let ctx = canvas.getContext('2d');
         ctx.drawImage(imgRef.current, 0, 0, canvas.width, canvas.height);
         let data = canvas.toDataURL('image/jpeg');
@@ -137,8 +142,9 @@ export default function CreatePost(props: CreatePostProps) {
         </button>
       </form>
       {imgs.length > 0 && (
-
-        <img ref={imgRef} className='w-0 hidden h-auto' src={imgs[0].base64} alt="test" />
+        <div className='max-h-56 bg-red-500'>
+          <img ref={imgRef} className='hidden max-h-full object-cover w-auto' src={imgs[0].base64} alt="test" />
+        </div>
       )}
       
     </div>

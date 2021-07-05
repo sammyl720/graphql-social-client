@@ -3,13 +3,19 @@ import { useRouter } from "next/router"
 import { useContext, useEffect } from "react"
 import Context from "../context/general/Context"
 import { memoryToken } from "../memory"
+
 const Navbar = () => {
-  const { logout, loadMe } = useContext(Context)
+  const { logout, loadMe, refreshToken } = useContext(Context)
   useEffect(() => {
     if(memoryToken()){
       loadMe()
     }
   }, [memoryToken(), process.browser])
+  // useEffect(() => {
+  //   if(!memoryToken()){
+  //     refreshToken()
+  //   }
+  // }, [])
   const router = useRouter()
   return (
     <header className='w-screen flex items-center z-50 bg-indigo-900 p-4 px-8 lg:px-32 justify-between'>

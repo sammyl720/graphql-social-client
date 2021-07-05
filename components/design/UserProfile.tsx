@@ -22,7 +22,7 @@ const UserProfile:React.FC<UserProfileProps> = ({ user }) => {
         <meta name="description" content={`${user.name} is on kesher.`} />
       </Head>
 
-          { user.id == me.id && (
+          { user.id == me?.id && (
               <>
                 <i className="fas fa-pen ml-auto mr-2 cursor-pointer" onClick={() => {
                 setToggleCreateModal(oldToggle => !oldToggle)

@@ -16,6 +16,7 @@ body{
 
 .modal {
   @apply absolute z-50 rounded-lg bg-white shadow-md inset-1 px-2 py-1  flex flex-col items-center h-auto max-w-screen-lg mx-auto;
+  min-height: fit-content;
 }
 .profile {
   max-width: 12rem;
