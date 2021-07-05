@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from 'react';
 import Context from './Context'
 import reducer from './reducer';
 import { LOGOUT, SET_ERROR, SET_LOADING, SET_MESSAGE, SET_OWNER, SET_TOKEN, SET_USER } from './types';
-import {  useMutation, useLazyQuery} from '@apollo/client'
+import { makeVar, useMutation, useLazyQuery, ReactiveVar} from '@apollo/client'
 
 import {minute} from '../../utils/getTimeDiffernce'
 import { expireTime, memoryToken } from '../../memory';
@@ -25,17 +25,45 @@ function Provider ({ children }) {
     user: null
   }
 
+  const setTimer = () => {
+    /** 
+     * isRunning: a reactive var boolean to indicate whether timer is running;
+     * */
+    let isRunning = makeVar(true)
+    let timer = setTimeout(() => {
+      // let timeLeft = (expireTime() - Date.now()) / minute;
+      //   // console.log(`${timeLeft} minutes to refresh token`)
+      //   // console.log(timeLeft < 14.7, timeLeft + ' less then 14.7?')
+      //   // console.log('refreshing?')
+      refreshToken()
+      isRunning(false);
+    }, minute * 14)
+    return [timer, isRunning];
+  }
+
   const [state, dispatch] = useReducer(reducer, initialState)
 
   // dispatch functions
   // set token
+  let tokenManagement: any[];
   const setToken = async ({ token, expireTime: expiresIn }) => {
-    console.log(token, expiresIn)
+    if(tokenManagement[0].hasOwnProperty('_idlePrev')){
+      clearTimeout(tokenManagement[0])
+      tokenManagement[1](false)
+      tokenManagement = []
+    }
     if(token){
+      console.log('setting timer')
       console.log('there is a token')
+      tokenManagement = setTimer()
+
       memoryToken(token)
-      console.log(`token set? ${memoryToken()}`)
+      console.log('Timer is on? ', tokenManagement[1]?.() || false)
+      console.log(`token set? ${!!memoryToken()}`)
     } else {
+      console.log('deleting timer')
+      
+      console.log('Timer is on? ', tokenManagement[1]?.() || false)
       memoryToken(null)
     }
     if(expiresIn){
@@ -47,7 +75,7 @@ function Provider ({ children }) {
 
   // request refresh token: local
   const [refreshToken] = useLazyQuery(REFRESH_TOKEN,{
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
     onCompleted: ({ refresh }) => {
       console.log(refresh)
@@ -64,30 +92,24 @@ function Provider ({ children }) {
     }
   })
   /// set current user
-  const [loadMe] = useLazyQuery(ME, {
+  const [loadMe, { refetch: refetchMe, stopPolling:stopPollingMe }] = useLazyQuery(ME, {
     onCompleted: (data) => {
       if(data.me.__typename == "User"){
         setOwner(data.me)
-        let timeLeft = (expireTime() - Date.now()) / minute;
-        console.log(`${timeLeft} minutes to refresh token`)
-        console.log(timeLeft < 14.7, timeLeft + ' less then 14.7?')
-        if(timeLeft < 14.5){
-          console.log('refreshing?')
-          refreshToken()
-        }
+        
       } else {
         setError(data.me.message)
         setLoading(false)
       }
     },
-    pollInterval: 4000,
+    pollInterval: minute,
     onError: (e) => {
       console.log(e)
       setError(e.message)
       setLoading(false)
     },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: 'cache-and-network'
+    fetchPolicy: 'network-only'
   })
   const setLoading = (loading) => {
     if(typeof loading !== 'boolean') return;
@@ -116,7 +138,6 @@ function Provider ({ children }) {
           setError(data.login.error)
         } else if(data.login.token){
           setMessage("Succesfuly signed in")
-          console.log(data.login, 'data.login.token object')
           const { token, expireTime } = data.login;
           setToken({ token, expireTime: parseInt(expireTime) })
         }
@@ -163,6 +184,7 @@ function Provider ({ children }) {
       } else {
         console.log('you posted')
         setMessage(`You posted '${data.addPost.text}.'`)
+        refetchMe()
         setLoading(false)
       }
     },
@@ -175,7 +197,6 @@ function Provider ({ children }) {
       if(data.addPost.id){
         const { addPost: newPost } = data;
         const { me: { posts: existingPosts } } = cache.readQuery({ query: ME })
-        loadMe()
       }
     }
   });
@@ -184,13 +205,12 @@ function Provider ({ children }) {
   // like post 
   const [toggleLikePost] = useMutation(TOGGLE_LIKE_POST, {
     onCompleted: (data) => {
-      console.log(data.toggleLikePost)
+      // console.log(data.toggleLikePost)
       // status means that mutation did not cencounter any errors on server
       if(data.toggleLikePost.status){
         // update the ui
         const { status } = data.toggleLikePost;
-        console.log(status)
-        loadMe()
+        // console.log(status)
       } else {
         setError(data.toggleLikePost.message)
       }
@@ -201,10 +221,8 @@ function Provider ({ children }) {
     },
     update: (cache, { data }) => {
       if(data.toggleLikePost.status){
-        console.log('ewpm')
         let idRgx = /\((?<postId>[a-f0-9]+)\)/i
         let unliked = /unliked/.test(data.toggleLikePost.status)
-        console.log(data)
         const id = data.toggleLikePost.status.match(idRgx).groups?.postId
         if(id){
           const identifier = `Post:${id}`;
@@ -223,7 +241,6 @@ function Provider ({ children }) {
               }
             }
           })
-          loadMe()
         }
       }
     }
@@ -233,6 +250,7 @@ function Provider ({ children }) {
     onCompleted: (data) => {
       if(data.deletePost.status){
         setMessage(data.deletePost.status)
+        refetchMe()
       } else if(data.deletePost.message){
         setError(data.deletePost.message)
       }
@@ -252,11 +270,10 @@ function Provider ({ children }) {
   const logout = async () => {
     memoryToken(null)
     expireTime(null)
+    stopPollingMe()
     dispatch({ type: LOGOUT })
     try {
       const res: AxiosResponse = await axios(process.env.NEXT_PUBLIC_BASE_URL + '/logout')
-      console.log(res.status, 'LOGOUT STATUS')
-      console.log(res.data)
     } catch (error) {
       console.log(error)
     }
@@ -285,6 +302,7 @@ function Provider ({ children }) {
   return (
     <Context.Provider value={{
       ...state,
+      refetchMe,
       setToken,
       setLoading,
       setMessage,

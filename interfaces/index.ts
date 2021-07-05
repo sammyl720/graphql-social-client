@@ -1,4 +1,4 @@
-import { FetchResult, MutationFunctionOptions, OperationVariables, QueryLazyOptions } from "@apollo/client";
+import { ApolloQueryResult, FetchResult, MutationFunctionOptions, OperationVariables, QueryLazyOptions } from "@apollo/client";
 
 export interface User {
   __typename: 'User';
@@ -76,6 +76,7 @@ export interface IState {
   message: Message;
   me: User | null;
   user: User | null;
+  refetchMe?: (variables?: Partial<OperationVariables>) => Promise<ApolloQueryResult<any>>;
   setToken?: ({ token, expireTime: expiresIn }: { token: Token; expireTime: ExpireTime ; }) => Promise<void>,
   setLoading?: (loading: boolean) => void;
   setMessage?: (message: Message, timer?: number ) => void;

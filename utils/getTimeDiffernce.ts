@@ -1,4 +1,10 @@
+/**
+ * A second: 1000ms
+**/
 export const second = 1000;
+/**
+ * A minute: 60 seconds | 60000ms
+**/
 export const minute = 60 * second;
 export const hour = 60 * minute;
 export const day = 24 * hour;
