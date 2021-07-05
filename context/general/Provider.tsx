@@ -45,9 +45,9 @@ function Provider ({ children }) {
 
   // dispatch functions
   // set token
-  let tokenManagement: any[];
+  let tokenManagement: any[] = [];
   const setToken = async ({ token, expireTime: expiresIn }) => {
-    if(tokenManagement?[0]?.hasOwnProperty('_idlePrev') || false ){
+    if(tokenManagement.length > 0) {
       clearTimeout(tokenManagement[0])
       tokenManagement[1](false)
       tokenManagement = []
