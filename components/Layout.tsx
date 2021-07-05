@@ -4,16 +4,7 @@ import Context from "../context/general/Context"
 import Navbar from "./Navbar"
 import Toast from "./design/Toast"
 function Layout ({ children }) {
-  const { setToken, token, error, message, setError, setMessage } = useContext(Context)
-  let client = typeof window != 'undefined'
-  useEffect(() => {
-    if(window && !token){
-      if(window.localStorage.token){
-        setToken(window.localStorage.token)
-      }
-    }
-
-  }, [token, client])
+  const { setToken, error, message, setError, setMessage } = useContext(Context)
   return (
     <div className='backdrop'>
       <Navbar />
