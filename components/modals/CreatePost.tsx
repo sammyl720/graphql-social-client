@@ -36,13 +36,15 @@ export default function CreatePost(props: CreatePostProps) {
         let canvas = document.createElement('canvas');
         let scaleSize = maxWidth / imgRef.current.width;
         let curHeight = imgRef.current.height;
-        while(curHeight * scaleSize > 500){
+        let shortend = false;
+        while(curHeight * scaleSize > 600){
           maxWidth -= 5;
           scaleSize = maxWidth / imgRef.current.width;
           curHeight = imgRef.current.height * scaleSize;
+          shortend = true;
         }
         canvas.width = maxWidth
-        canvas.height = curHeight;
+        canvas.height = shortend ? curHeight : curHeight * scaleSize;
         let ctx = canvas.getContext('2d');
         ctx.drawImage(imgRef.current, 0, 0, canvas.width, canvas.height);
         let data = canvas.toDataURL('image/jpeg');

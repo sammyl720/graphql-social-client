@@ -7,6 +7,7 @@ import Context from '../../context/general/Context'
 import CreatePost from '../modals/CreatePost'
 import UserDashboard from './UserDashboard'
 import { User } from '../../interfaces'
+import Users from '../users/Users'
 interface UserProfileProps {
   user: User
 }
@@ -35,8 +36,9 @@ const UserProfile:React.FC<UserProfileProps> = ({ user }) => {
           )}
           <div className='flex flex-col gap-2'>
             <UserDashboard user={user} setView={setView} />
-            
             {view == 'posts' && <Posts posts={user.posts} />}
+            {view == 'following' && <Users users={user.following} />}
+            {view == 'followers' && <Users users={user.followers} />}
           </div>
         </div>
   )

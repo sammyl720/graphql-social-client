@@ -3,25 +3,29 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useQuery } from '@apollo/client'
 import Loader from '../../../components/design/Loader'
-import Toast from '../../../components/design/Toast'
 import UserProfile from '../../../components/design/UserProfile'
 import { useContext, useEffect } from 'react'
 import Context from '../../../context/general/Context'
-import ME from '../../../graphql/queries/me'
-import USER from '../../../graphql/queries/user'
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult, GetStaticPathsResult, GetStaticPropsContext, GetStaticPropsResult } from 'next'
+import GET_PUBLIC_USER from '../../../graphql/queries/getPublicUser'
+import { User } from '../../../interfaces'
 
 function Profile({ id }) {
   const router = useRouter()
-  const { loading, setLoading, user, getPublicUser } = useContext(Context)
-  useEffect(() => {
-    getPublicUser({ variables: { id }})
-  }, [])
-  if (!user?.id) return <Loader />;
+  const { loading, error, data } = useQuery(GET_PUBLIC_USER, {
+    variables: { id }
+  })
+
+  if(loading || !data) return <Loader />
+  if(error || data.publicUser.message) {
+    console.log(error || data.publicUser.message)
+    router.push('/Landing')
+  }
+
   return (
     <div className="text-2xl h-100">
-      {user && (
-        <UserProfile user={user} />
+      {data.publicUser.id && (
+        <UserProfile user={data.publicUser} />
       )}
     </div>
   )
