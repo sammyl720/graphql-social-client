@@ -1,18 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import { EditUserInput, Img, User } from '../../interfaces'
+import React, { useContext, useEffect, useState } from 'react'
+import { Img, User } from '../../interfaces'
 import Input from './Input'
 import ImageHandler from '../util/ImageHandler';
+import Context from '../../context/general/Context';
 interface EditProps {
   user: User;
 }
 export default function UserEdit({ user }: EditProps ) {
-  const [variables, setVariables] = useState<EditUserInput>({
-    bio: user.bio,
-    profile_img: user.profile_img || null,
-    gender: user.gender,
-    name: user.name,
-    private: user.private
-  })
+  const { updateProfile } = useContext(Context)
+  const [bio, setBio] = useState(user.bio || '')
 
   const [img, setImg] = useState<Img>(null)
   const [bioEditMode, setBioEditMode] = useState(false)
@@ -22,11 +18,26 @@ export default function UserEdit({ user }: EditProps ) {
   }, [])
   const handleSubmit = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    let variables = {}
+    if(bio){
+      variables['bio'] = bio;
+    }
+
+    if(img){
+      variables['profile_img'] = img
+    }
+
+    // todo add option to clear/reset image
     console.log(variables)
+    updateProfile({
+      variables: { data: variables }
+    })
   }
 
   const handleChange = (e:React.FormEvent<HTMLInputElement>) => {
     console.log(e.currentTarget.name, e.currentTarget.value)
+    console.log(e.currentTarget.value)
+    setBio(e.currentTarget.value)
   }
   return (
     <form onSubmit={handleSubmit} className={`flex flex-wrap flex-col items-center justify-between`}>
@@ -45,13 +56,13 @@ export default function UserEdit({ user }: EditProps ) {
         </div>
       <div className='flex items-center justify-between'>
       {bioEditMode ?  (
-        <Input name='bio' value={user.bio || ''} title='Edit Your Bio' label='Bio' tabIndex={0} placeholder='Your Bio' attributes={{}} filename='' handleChange={handleChange} required={false} />
+        <Input name='bio' type='text' value={bio || ''} title='Edit Your Bio' label='Bio' tabIndex={0} placeholder='Your Bio' attributes={{}} handleChange={handleChange} required={false} />
         ) : (
           <div className={`flex-row flex my-4 items-center w-100 justify-between border`}>
         <span className='bg-indigo-800 text-white p-2 px-4 rounded-l-md text-xl cursor-pointer'>
           Bio
         </span>
-        <span className={`focus:outline-none flex-grow ml-4 p-2 rounded-r-md w-48`}>{variables.bio || 'Your bio'}</span>
+        <span className={`focus:outline-none flex-grow ml-4 p-2 rounded-r-md w-48`}>{user.bio || bio || 'Your bio'}</span>
         </div>
       )}
       
@@ -59,7 +70,7 @@ export default function UserEdit({ user }: EditProps ) {
         <i className={`fas fa-toggle-${bioEditMode ? 'off' : 'on'}`}/>
       </div>
       </div>
-
+        <input type="submit" value="Update" />
     </form>
   )
 }

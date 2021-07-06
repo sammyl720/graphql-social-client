@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 const UPDATE_PROFILE = gql`
-  mutation UpdateProfile($data: updateProfileInput){
+  mutation UpdateProfile($data: updateProfileInput!){
     updateProfile(data: $data){
       ... on Success {
         status

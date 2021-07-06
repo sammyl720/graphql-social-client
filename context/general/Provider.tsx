@@ -319,13 +319,15 @@ function Provider ({ children }) {
       console.log(err)
     }
   })
-  const [updateProfile] = useLazyQuery(UPDATE_PROFILE, {
+  const [updateProfile] = useMutation(UPDATE_PROFILE, {
     onCompleted: (data) => {
       console.log(data)
       if(!data.updateProfile.message){
         loadMe()
         setMessage(data.updateProfile.status)
+        router.push('/profile')
       } else {
+        console.log(data.updateProfile.errors)
         setError(data.updateProfile.message)
         // router.push('/profile')
       }

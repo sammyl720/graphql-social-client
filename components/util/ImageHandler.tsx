@@ -11,19 +11,22 @@ interface ImageHandlerProps {
 function ImageHandler({ image, cb }: ImageHandlerProps) {
   const imgRef = useRef<HTMLImageElement>(null)
   
-  const [imgs, setImg] = useState<Img | null>(null)
+  const [img, setImg] = useState<Img | null>(null)
   const [resized, setResized] = useState<Img>({ filename: '', base64: ''});
-
+  const [reset, setReset] = useState(false)
   useEffect(() => {
-    if(imgRef.current){
+    console.log('image lenth', imgRef.current.sizes, imgRef.current?.src.length, imgRef.current)
+    if(img && reset){
+      console.log('resizing')
       let maxWidth = 500;
       imgRef.current.onload = function(e:Event){
         let canvas = document.createElement('canvas');
         let scaleSize = maxWidth / imgRef.current.width;
         let curHeight = imgRef.current.height;
         let shortend = false;
-        while(curHeight * scaleSize > 600){
+        while(curHeight * scaleSize > 500){
           maxWidth -= 5;
+          // console.log(`Resizing: width ${maxWidth}`)
           scaleSize = maxWidth / imgRef.current.width;
           curHeight = imgRef.current.height * scaleSize;
           shortend = true;
@@ -33,14 +36,15 @@ function ImageHandler({ image, cb }: ImageHandlerProps) {
         let ctx = canvas.getContext('2d');
         ctx.drawImage(imgRef.current, 0, 0, canvas.width, canvas.height);
         let data = canvas.toDataURL('image/jpeg');
-        setResized({ base64: data.toString(), filename: imgs[0].filename || 'default' })
+        setResized({ base64: data.toString(), filename: img.filename || 'default' })
       }
     }
-  }, [imgs, imgRef.current])
+  }, [img, imgRef.current])
 
   const handleFileChange = (e:React.ChangeEvent<HTMLInputElement>) => {
 
     const file = e.currentTarget.files[0];
+    setReset(file.size > 6000000)
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onload = function(event){
