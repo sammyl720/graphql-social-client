@@ -12,7 +12,7 @@ const Login = () => {
   useEffect(() => {
     setLoading(true)
     if(memoryToken()){
-      router.push('/profile')
+      router.push('/')
     } else {
       setLoading(false)
     }

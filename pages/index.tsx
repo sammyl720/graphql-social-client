@@ -1,44 +1,20 @@
-import { useState } from 'react'
-import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useQuery } from '@apollo/client'
 import Loader from '../components/design/Loader'
-import Toast from '../components/design/Toast'
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
+import Front from '../components/front/Front'
 import Context from '../context/general/Context'
-import ME from '../graphql/queries/me'
-import { memoryToken } from '../memory';
 function Home() {
   const router = useRouter()
-  const { me, loading, setLoading, setOwner, setError, error, message, setMessage } = useContext(Context)
-  useEffect(() => {
-    if(!memoryToken()){
-      router.push('/login')
-    }
-  }, [memoryToken()])
-  
-  const { data } = useQuery(ME, {
-    onCompleted: (data) => {
-      if(data.me.__typename == "User"){
-        setOwner(data.me)
-        setMessage(`Welcome back ${data.me.name}`)
-      } else {
-        setError(data.me.message)
-      }
-      setLoading(false)
-    },
-    onError: (e) => {
-      setError(e.message)
-      setLoading(false)
-    }
-  })
+  const { me, loading } = useContext(Context)
+
   if (loading) return <Loader />;
   return (
-    <div className="text-2xl text-blue-900 w-100 h-100">
-      {message && (
-        <Toast message={message} type='success' onLeave={() => setMessage(null) } />
+    <div className="max-w-screen-lg mx-auto h-100 ">
+      {me ? (
+        <h1>You are logged in as {me.name}</h1>
+      ) : (
+        <Front />
       )}
-      <h1>Feed</h1>
     </div>
   )
 }

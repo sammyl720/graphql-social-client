@@ -14,7 +14,6 @@ const reducer = (state:IState, action: IAction) => {
     case SET_USER:
       return { ...state, user: action.payload }
     case SET_OWNER:
-      console.log('setting owner ' + action.payload.name)
       return { ...state, me: action.payload, loading:false }
     case LOGOUT:
       return { ...state, user: null, message: 'User logged out', me:null }

@@ -138,9 +138,8 @@ function Provider ({ children }) {
     {
       onCompleted: (data) => {
         if(data.login.errors){
-          setError(data.login.error)
+          setError(data.login.message)
         } else if(data.login.token){
-          setMessage("Succesfuly signed in")
           const { token, expireTime } = data.login;
           setToken({ token, expireTime: parseInt(expireTime) })
         }
