@@ -17,6 +17,7 @@ import GET_PUBLIC_USER from '../../graphql/queries/getPublicUser';
 import REFRESH_TOKEN from '../../graphql/queries/refresh';
 import { User } from '../../interfaces';
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import UPDATE_PROFILE from '../../graphql/mutations/updateProfile';
 
 function Provider ({ children }) {
   const initialState = {
@@ -318,9 +319,26 @@ function Provider ({ children }) {
       console.log(err)
     }
   })
+  const [updateProfile] = useLazyQuery(UPDATE_PROFILE, {
+    onCompleted: (data) => {
+      console.log(data)
+      if(!data.updateProfile.message){
+        loadMe()
+        setMessage(data.updateProfile.status)
+      } else {
+        setError(data.updateProfile.message)
+        // router.push('/profile')
+      }
+    },
+    onError: (err) => {
+      setError(err.message)
+      console.log(err)
+    }
+  })
   return (
     <Context.Provider value={{
       ...state,
+      updateProfile,
       getPublicUser,
       refreshToken,
       refetchMe,

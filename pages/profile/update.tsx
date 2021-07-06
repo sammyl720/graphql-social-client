@@ -1,11 +1,11 @@
 import { memoryToken } from '../../memory'
 import { useRouter } from 'next/router'
 import Loader from '../../components/design/Loader'
-import UserProfile from '../../components/design/UserProfile'
+import UserEdit from '../../components/design/UserEdit'
 import { useContext, useEffect } from 'react'
 import Context from '../../context/general/Context'
 
-function User() {
+function Update() {
   const router = useRouter()
   const { loading, me } = useContext(Context)
   useEffect(() => {
@@ -20,11 +20,11 @@ function User() {
   return (
     <div className="max-w-screen-lg mx-auto h-100 ">
       {me && (
-        <UserProfile user={me} />
+        <UserEdit user={me} />
       )}
     </div>
   )
 }
 
 
-export default User
+export default Update

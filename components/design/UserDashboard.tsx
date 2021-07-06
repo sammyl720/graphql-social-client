@@ -12,8 +12,17 @@ function UserDashboard({ user, setView }: DashBoardProps) {
   const { me } = useContext(Context)
   return (
     <div>
-      <figure className={`flex justify-between items-center flex-col max-content  max-w-md mx-auto p-5`}>
+      <figure className={`flex relative justify-between items-center flex-col max-content  max-w-md mx-auto p-5`}>
         <img className='profile' src={user.profile_img?.secure_url || '/imgs/user.png'} alt="profile picture" />
+        {me && user.id == me?.id && (
+          <span className='my-2'>
+            <Link href='/profile/update'>
+              <a className=' text-blue-900'>
+                <i className="fas fa-user-edit text-xl" />
+              </a>
+            </Link>
+          </span>
+        )}
         <figcaption className='mt-1'>
           <Link href={`/profile/${user.id}`}>
               <a>{user.name}</a>

@@ -14,7 +14,7 @@ export interface User {
   date_joined?:Date; 
   email?:string;
   bio?:string;
-  gender?:string; 
+  gender?:"Male" | "Female" | "NonBinary" | "Unspecified"; 
 }
 
 export interface Post {
@@ -67,11 +67,22 @@ export interface Image {
    created_at?:string;
 }
 
+export interface EditUserInput {
+  name?: string
+  gender?: 'Male' |
+  'Female' |
+  'NonBinary' |
+  'Unspecified'
+  bio?: string;
+  private?: Boolean
+}
+
 export type Token = string | null;
 export type Message = string | null;
 export type ExpireTime = number | null;
 export interface IState {
   loading: boolean | null;
+  updateProfile?: (options?: QueryLazyOptions<OperationVariables>) => void;
   error: Message;
   message: Message;
   me: User | null;
