@@ -17,6 +17,11 @@ export interface User {
   gender?:"Male" | "Female" | "NonBinary" | "Unspecified"; 
 }
 
+export interface Img {
+  base64: string;
+  filename:string;
+}
+
 export interface Post {
   __typename: 'Post';
   id?:string;
@@ -74,7 +79,8 @@ export interface EditUserInput {
   'NonBinary' |
   'Unspecified'
   bio?: string;
-  private?: Boolean
+  private?: Boolean;
+  profile_img?: Image
 }
 
 export type Token = string | null;

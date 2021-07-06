@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useRef} from 'react'
-import { Image } from '../../interfaces';
+import { Image, Img } from '../../interfaces';
 import Input from '../design/Input';
 
-interface Img {
-  base64: string;
-  filename:string;
-}
 
 interface ImageHandlerProps {
   image?:Image,
@@ -40,7 +36,7 @@ function ImageHandler({ image, cb }: ImageHandlerProps) {
         setResized({ base64: data.toString(), filename: imgs[0].filename || 'default' })
       }
     }
-  }, [imgs, imgRef])
+  }, [imgs, imgRef.current])
 
   const handleFileChange = (e:React.ChangeEvent<HTMLInputElement>) => {
 
@@ -62,6 +58,7 @@ function ImageHandler({ image, cb }: ImageHandlerProps) {
   return (
     <div>
       <div className='max-h-56 bg-red-500'>
+
           <img ref={imgRef} className='hidden max-h-full object-cover w-auto' src={resized.base64 || image?.secure_url || ''} alt="Profile Image" />
         </div>
     <Input 
