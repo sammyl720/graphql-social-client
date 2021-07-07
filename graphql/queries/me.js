@@ -9,12 +9,14 @@ const ME = gql`
       verified
       name
       email
+      bio
       profile_img {
           ... image
       }
       followers {
         id
         name
+        bio
         profile_img {
           ... image
         }
@@ -22,6 +24,7 @@ const ME = gql`
       following {
         id
         name
+        bio
         profile_img {
             ... image
         }

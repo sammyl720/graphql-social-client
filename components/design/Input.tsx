@@ -36,7 +36,7 @@ const Input = ({
   }, [fileRef])
   return (
     <div className={`flex-row flex my-4 items-center w-100 justify-between border`}>
-        <label title={title} htmlFor={name} className='bg-indigo-800 text-white p-2 px-4 rounded-l-md text-xl cursor-pointer'>
+        <label title={title} htmlFor={name} className={`bg-indigo-800 text-white p-2 px-4 ${type != 'file' && 'rounded-l-md'} text-xl cursor-pointer`}>
           {label}
         </label>
         <input 
@@ -46,7 +46,7 @@ const Input = ({
         name={name} 
         id={name} 
         placeholder={placeholder}
-        value={value} 
+        value={value}
         onChange={handleChange} 
         {...attributes}
         { ...type == 'file' && { ref:fileRef }}

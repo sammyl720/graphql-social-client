@@ -11,7 +11,7 @@ interface DashBoardProps {
 function UserDashboard({ user, setView }: DashBoardProps) {
   const { me } = useContext(Context)
   return (
-    <div>
+    <div className='flex flex-col items-center justify-between'>
       <figure className={`flex relative justify-between items-center flex-col max-content  max-w-md mx-auto p-5`}>
         <img className='profile' src={user.profile_img?.secure_url || '/imgs/user.png'} alt="profile picture" />
         {me && user.id == me?.id && (
@@ -29,6 +29,12 @@ function UserDashboard({ user, setView }: DashBoardProps) {
           </Link>
         </figcaption>
       </figure>
+      {user.bio && (
+        <div className='flex justify-between'>
+          <strong className='mr-2 text-xl'>Bio</strong>
+          <p>{user.bio}</p>
+        </div>
+      )}
       <div className='flex-grow flex flex-col'>
         <div className="flex flex-col w-100 md:flex-row items-center justify-between p-2">
           <Badge size='medium' icon="fas fa-user-friends" text={`${user.posts.length} posts`} onClick={() => setView("posts") } />

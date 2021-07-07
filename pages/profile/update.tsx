@@ -16,6 +16,7 @@ function Update() {
   }, [memoryToken(), process.browser, me])
   useEffect(() => {
   }, [me])
+  useEffect(() => {}, [loading])
   if (loading) return <Loader />;
   return (
     <div className="max-w-screen-lg mx-auto h-100 ">
